@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MoneyTrackerEMEC - Tu Contabilidad Sencilla</title>
+  <!-- Meta etiquetas SEO -->
+  <meta name="description" content="Gestiona tus ingresos, egresos y balance neto en un solo lugar con MoneyTrackerEMEC. Tu dinero bajo control.">
+  
+  <!-- Estilos en cascada (Separados y organizados) -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/transactions.css">
+</head>
+<body>
+
+  <div class="app-container">
+    
+    <!-- BARRA DE NAVEGACIÓN PRINCIPAL -->
+    <nav class="navbar" id="main-navbar">
+      <div class="navbar-container">
+        <!-- Logo y Título principal del sitio -->
+        <a href="#" class="navbar-brand" id="brand-logo">
+          <div class="brand-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2" ry="2"></rect><line x1="12" y1="1" x2="12" y2="4"></line><line x1="12" y1="20" x2="12" y2="23"></line><line x1="2" y1="10" x2="22" y2="10"></line></svg>
+          </div>
+          <span class="brand-title">MoneyTrackerEMEC</span>
+        </a>
+        
+        <!-- Pestañas del menú -->
+        <div class="navbar-nav">
+          <button class="nav-btn active" data-tab="dashboard" id="nav-dashboard">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="9" rx="1"></rect><rect x="14" y="3" width="7" height="5" rx="1"></rect><rect x="14" y="12" width="7" height="9" rx="1"></rect><rect x="3" y="16" width="7" height="5" rx="1"></rect></svg>
+            <span>Dashboard</span>
+          </button>
+          <button class="nav-btn" data-tab="tabla" id="nav-transactions">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+            <span>Transacciones</span>
+          </button>
+        </div>
+      </div>
+    </nav>
+
+    <!-- CONTENEDOR PRINCIPAL DE CONTENIDOS -->
+    <main class="main-content">
+      
+      <!-- PESTAÑA: DASHBOARD (MÉTRICAS Y RESUMEN) -->
+      <section id="dashboard-container" class="tab-content">
+        <!-- Renderizado dinámico desde js/dashboard.js -->
+      </section>
+
+      <!-- PESTAÑA: TABLA HISTÓRICA (LISTADO COMPLETO Y FILTROS) -->
+      <section id="transactions-container" class="tab-content" style="display: none;">
+        <!-- Renderizado dinámico desde js/transactions.js -->
+      </section>
+
+    </main>
+
+  </div>
+
+  <!-- MODAL PARA NUEVO REGISTRO / EDICIÓN (DESDE ARRIBA DEL BACKDROP) -->
+  <div class="modal-overlay" id="transaction-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modal-title">Nuevo Movimiento</h3>
+        <button class="modal-close-btn" id="modal-close" aria-label="Cerrar ventana emergente">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+      
+      <div class="modal-body">
+        <form id="transaction-form" data-selected-type="egreso">
+          <!-- Selector Segmentado de Tipo -->
+          <div class="type-segmented-control">
+            <button type="button" class="type-btn" data-type="ingreso" id="type-income-btn">Ingreso (+)</button>
+            <button type="button" class="type-btn active" data-type="egreso" id="type-expense-btn">Egreso (-)</button>
+          </div>
+
+          <!-- Monto -->
+          <div class="form-group">
+            <label for="tx-monto" class="form-label">Monto (BOB)</label>
+            <div class="input-icon-group">
+              <span class="input-icon">Bs.</span>
+              <input 
+                type="number" 
+                id="tx-monto" 
+                name="monto"
+                step="0.01" 
+                min="0.01" 
+                placeholder="0.00" 
+                required 
+                class="form-control"
+              >
+            </div>
+          </div>
+
+          <!-- Descripción -->
+          <div class="form-group">
+            <label for="tx-descripcion" class="form-label">Descripción</label>
+            <input 
+              type="text" 
+              id="tx-descripcion" 
+              name="descripcion"
+              placeholder="Ej: Pago de Luz / Sueldo" 
+              required 
+              class="form-control"
+            >
+          </div>
+
+          <!-- Categoría y Fecha en Grid de 2 Columnas -->
+          <div class="form-grid-2">
+            <!-- Categoría -->
+            <div class="form-group">
+              <label for="tx-categoria" class="form-label">Categoría</label>
+              <select id="tx-categoria" name="categoria" class="form-control">
+                <option value="Sueldo">Sueldo</option>
+                <option value="Comida">Comida</option>
+                <option value="Servicios">Servicios</option>
+                <option value="Transporte">Transporte</option>
+                <option value="Ocio">Ocio</option>
+                <option value="Inversión">Inversión</option>
+                <option value="Otros" selected>Otros</option>
+              </select>
+            </div>
+            
+            <!-- Fecha -->
+            <div class="form-group">
+              <label for="tx-fecha" class="form-label">Fecha</label>
+              <input 
+                type="date" 
+                id="tx-fecha" 
+                name="fecha"
+                required 
+                class="form-control"
+              >
+            </div>
+          </div>
+
+          <!-- Botones de Acción del Formulario -->
+          <div class="modal-actions">
+            <button type="button" class="btn btn-outline" id="modal-cancel">Cancelar</button>
+            <button type="submit" class="btn btn-primary" id="modal-submit">Guardar Registro</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Script modular de inicio -->
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

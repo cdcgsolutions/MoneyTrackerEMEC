@@ -1,0 +1,348 @@
+/**
+ * transactions.css
+ * Estilos específicos para el Historial de Transacciones en MoneyTrackerEMEC.
+ * Filtros refinados, tablas responsivas premium y botones de acción rápidos.
+ */
+
+/* --- PANEL DE ACCIONES SUPERIOR --- */
+.transactions-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+  animation: fadeIn var(--transition-normal) forwards;
+}
+
+.transactions-title-group h1 {
+  font-size: 1.75rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: var(--text-main);
+}
+
+/* --- BARRA DE FILTROS --- */
+.filter-bar {
+  display: flex;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  padding: 0.3rem;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  gap: 0.25rem;
+}
+
+.filter-btn {
+  background: none;
+  border: none;
+  font-family: inherit;
+  font-size: 0.87rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  padding: 0.5rem 1.25rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.filter-btn:hover {
+  background-color: var(--bg-main);
+  color: var(--text-main);
+}
+
+.filter-btn.active {
+  background-color: var(--primary-red-light);
+  color: var(--primary-red);
+}
+
+/* --- TABLA CONTENEDORA --- */
+.table-container {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  animation: slideUp var(--transition-normal) 100ms forwards;
+}
+
+.table-responsive {
+  overflow-x: auto;
+  width: 100%;
+}
+
+.tx-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.tx-table th {
+  background-color: var(--bg-main);
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.75px;
+  padding: 1.15rem 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.tx-table td {
+  padding: 1.15rem 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 0.95rem;
+  vertical-align: middle;
+  color: var(--text-main);
+  transition: var(--transition-fast);
+}
+
+.tx-table tbody tr {
+  transition: var(--transition-fast);
+}
+
+/* Efecto hover premium con acento rojo en el borde izquierdo de la fila */
+.tx-table tbody tr:hover {
+  background-color: var(--primary-red-light);
+}
+
+.tx-table tbody tr:hover td {
+  color: var(--text-main);
+}
+
+.tx-date {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  color: var(--text-secondary);
+}
+
+.tx-desc {
+  font-weight: 600;
+  max-width: 300px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* --- BADGES DE CATEGORÍAS --- */
+.category-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--radius-full);
+  background-color: var(--bg-main);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+  text-transform: capitalize;
+}
+
+/* Categorías específicas con detalles sutiles en rojo y otros tonos neutros premium */
+.category-badge[data-cat="sueldo"] {
+  background-color: var(--color-income-light);
+  color: var(--color-income);
+  border-color: hsla(162, 76%, 33%, 0.2);
+}
+
+.category-badge[data-cat="comida"] {
+  background-color: hsl(36, 100%, 96%);
+  color: hsl(36, 100%, 40%);
+  border-color: hsl(36, 100%, 90%);
+}
+
+.category-badge[data-cat="servicios"] {
+  background-color: hsl(200, 100%, 96%);
+  color: hsl(200, 100%, 40%);
+  border-color: hsl(200, 100%, 90%);
+}
+
+.category-badge[data-cat="ocio"] {
+  background-color: var(--primary-red-light);
+  color: var(--primary-red);
+  border-color: hsla(353, 85%, 46%, 0.15);
+}
+
+.category-badge[data-cat="inversión"] {
+  background-color: hsl(270, 70%, 97%);
+  color: hsl(270, 70%, 50%);
+  border-color: hsl(270, 70%, 92%);
+}
+
+/* --- MONTOS --- */
+.tx-amount {
+  font-weight: 700;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.tx-amount.income {
+  color: var(--color-income);
+}
+
+.tx-amount.expense {
+  color: var(--color-expense);
+}
+
+.tx-balance {
+  font-weight: 700;
+  text-align: right;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.tx-balance.positive {
+  color: var(--text-main);
+}
+
+.tx-balance.negative {
+  color: var(--primary-red);
+}
+
+/* --- BOTONES DE ACCIÓN --- */
+.actions-cell {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.action-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.4rem;
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition-fast);
+}
+
+.action-btn:hover {
+  background-color: var(--bg-main);
+}
+
+.action-btn.btn-edit:hover {
+  color: var(--color-income);
+  background-color: var(--color-income-light);
+}
+
+.action-btn.btn-delete:hover {
+  color: var(--primary-red);
+  background-color: var(--primary-red-light);
+}
+
+.action-btn svg {
+  width: 1.1rem;
+  height: 1.1rem;
+  stroke-width: 2.2;
+}
+
+/* --- RESPONSIVIDAD (MOBILE CARDS EN LUGAR DE TABLA) --- */
+@media (max-width: 768px) {
+  .transactions-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .filter-bar {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .filter-btn {
+    flex: 1;
+    text-align: center;
+    padding: 0.5rem 0.25rem;
+    font-size: 0.82rem;
+  }
+
+  /* Transformar la tabla en un listado de tarjetas en pantallas móviles */
+  .tx-table thead {
+    display: none; /* Ocultar cabeceras */
+  }
+  
+  .tx-table tbody, .tx-table tr, .tx-table td {
+    display: block;
+    width: 100%;
+  }
+  
+  .tx-table tbody tr {
+    padding: 1.25rem;
+    border-bottom: 1px solid var(--border-color);
+    position: relative;
+  }
+  
+  .tx-table tbody tr:hover {
+    background-color: var(--primary-red-light);
+  }
+  
+  .tx-table td {
+    padding: 0.25rem 0;
+    border: none;
+  }
+  
+  .tx-table td.cell-date {
+    font-size: 0.8rem;
+    order: 1;
+  }
+  
+  .tx-table td.cell-desc {
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    order: 2;
+  }
+  
+  .tx-table td.cell-category {
+    margin-bottom: 0.75rem;
+    order: 3;
+  }
+  
+  .tx-table td.cell-amount {
+    text-align: left;
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-top: 0.25rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    order: 4;
+  }
+  
+  /* Poner etiquetas descriptivas en móvil */
+  .tx-table td.cell-amount::before {
+    content: 'Monto:';
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+  }
+  
+  .tx-table td.cell-balance {
+    text-align: left;
+    font-size: 0.95rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    order: 5;
+    margin-bottom: 0.75rem;
+    border-bottom: 1px dashed var(--border-color);
+    padding-bottom: 0.5rem;
+  }
+  
+  .tx-table td.cell-balance::before {
+    content: 'Saldo Resultante:';
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+  }
+  
+  .tx-table td.cell-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    order: 6;
+    padding-top: 0.25rem;
+  }
+}

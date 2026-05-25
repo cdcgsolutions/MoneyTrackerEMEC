@@ -1,0 +1,466 @@
+/**
+ * style.css
+ * Estilos globales y tokens de diseño para MoneyTrackerEMEC.
+ * Diseño minimalista premium en blanco con acentos rojos.
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
+
+/* --- VARIABLES / DESIGN SYSTEM --- */
+:root {
+  /* Colores Acento (Rojo Premium) */
+  --primary-red: hsl(353, 85%, 46%);
+  --primary-red-hover: hsl(353, 90%, 38%);
+  --primary-red-light: hsl(353, 85%, 96%);
+  --primary-red-focus: hsla(353, 85%, 46%, 0.15);
+  
+  /* Colores de Estado */
+  --color-income: hsl(162, 76%, 33%);
+  --color-income-light: hsl(162, 70%, 96%);
+  --color-expense: var(--primary-red);
+  --color-expense-light: var(--primary-red-light);
+  
+  /* Paleta Neutra (Blanco y Slate) */
+  --bg-main: hsl(210, 20%, 98%);
+  --bg-card: #ffffff;
+  --border-color: hsl(214, 15%, 91%);
+  --border-focus: var(--primary-red);
+  
+  --text-main: hsl(222, 47%, 12%);
+  --text-secondary: hsl(215, 16%, 45%);
+  --text-muted: hsl(215, 13%, 65%);
+  
+  /* Sombras Modernas (Soft Elevation) */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.03);
+  --shadow-md: 0 4px 12px -1px rgba(0, 0, 0, 0.04), 0 2px 4px -1px rgba(0, 0, 0, 0.02);
+  --shadow-lg: 0 12px 24px -4px rgba(0, 0, 0, 0.06), 0 4px 8px -2px rgba(0, 0, 0, 0.02);
+  --shadow-modal: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  
+  /* Radio de Bordes */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-full: 9999px;
+
+  /* Transiciones */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* --- RESET & ESTRUCTURA BASE --- */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Outfit', sans-serif;
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* --- DISEÑO DEL CONTENEDOR --- */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.main-content {
+  flex-grow: 1;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+/* --- STICKY NAVBAR --- */
+.navbar {
+  background-color: var(--bg-card);
+  border-bottom: 1px solid var(--border-color);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition-fast);
+}
+
+.navbar-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  height: 4.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-decoration: none;
+}
+
+.brand-icon {
+  background-color: var(--primary-red);
+  color: #ffffff;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 10px rgba(217, 20, 41, 0.3);
+  transition: var(--transition-normal);
+}
+
+.navbar-brand:hover .brand-icon {
+  transform: rotate(-5deg) scale(1.05);
+}
+
+.brand-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--text-main);
+  letter-spacing: -0.5px;
+}
+
+.navbar-nav {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.nav-btn {
+  background: none;
+  border: none;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  padding: 0.6rem 1.2rem;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: var(--transition-fast);
+}
+
+.nav-btn:hover {
+  background-color: var(--primary-red-light);
+  color: var(--primary-red);
+}
+
+.nav-btn.active {
+  background-color: var(--primary-red);
+  color: #ffffff;
+}
+
+.nav-btn svg {
+  width: 1.1rem;
+  height: 1.1rem;
+  stroke-width: 2.2;
+}
+
+/* --- COMPONENTE DE BOTÓN GLOBAL --- */
+.btn {
+  font-family: inherit;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: var(--transition-fast);
+  box-shadow: var(--shadow-sm);
+}
+
+.btn:active {
+  transform: scale(0.98);
+}
+
+.btn-primary {
+  background-color: var(--primary-red);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(217, 20, 41, 0.15);
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-red-hover);
+  box-shadow: 0 6px 16px rgba(217, 20, 41, 0.25);
+}
+
+.btn-secondary {
+  background-color: var(--primary-red-light);
+  color: var(--primary-red);
+}
+
+.btn-secondary:hover {
+  background-color: hsl(353, 85%, 91%);
+}
+
+.btn-outline {
+  background-color: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+}
+
+.btn-outline:hover {
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  border-color: var(--text-muted);
+}
+
+/* --- MODAL DIALOG / FORMULARIO --- */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition-normal);
+}
+
+.modal-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.modal-card {
+  background-color: var(--bg-card);
+  border-radius: var(--radius-lg);
+  width: 100%;
+  max-width: 480px;
+  box-shadow: var(--shadow-modal);
+  border: 1px solid var(--border-color);
+  overflow: hidden;
+  transform: scale(0.95) translateY(10px);
+  transition: transform var(--transition-normal);
+}
+
+.modal-overlay.active .modal-card {
+  transform: scale(1) translateY(0);
+}
+
+.modal-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.modal-close-btn {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition-fast);
+}
+
+.modal-close-btn:hover {
+  background-color: var(--bg-main);
+  color: var(--primary-red);
+}
+
+.modal-close-btn svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.modal-body {
+  padding: 1.5rem;
+}
+
+/* Formulario inside modal */
+.form-group {
+  margin-bottom: 1.25rem;
+}
+
+.form-label {
+  display: block;
+  font-size: 0.87rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
+}
+
+.form-control {
+  width: 100%;
+  font-family: inherit;
+  font-size: 0.95rem;
+  color: var(--text-main);
+  padding: 0.75rem 1rem;
+  background-color: var(--bg-main);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  outline: none;
+  transition: var(--transition-fast);
+}
+
+.form-control:focus {
+  border-color: var(--border-focus);
+  background-color: #ffffff;
+  box-shadow: 0 0 0 3px var(--primary-red-focus);
+}
+
+.input-icon-group {
+  position: relative;
+}
+
+.input-icon-group .input-icon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.input-icon-group .form-control {
+  padding-left: 2rem;
+}
+
+/* Selector Segmentado de Tipo */
+.type-segmented-control {
+  display: grid;
+  grid-cols: 2;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.type-btn {
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  padding: 0.75rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-main);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.type-btn[data-type="ingreso"]:hover {
+  background-color: var(--color-income-light);
+  color: var(--color-income);
+  border-color: var(--color-income);
+}
+
+.type-btn[data-type="ingreso"].active {
+  background-color: var(--color-income);
+  color: #ffffff;
+  border-color: var(--color-income);
+  box-shadow: 0 4px 10px rgba(15, 118, 110, 0.2);
+}
+
+.type-btn[data-type="egreso"]:hover {
+  background-color: var(--color-expense-light);
+  color: var(--color-expense);
+  border-color: var(--color-expense);
+}
+
+.type-btn[data-type="egreso"].active {
+  background-color: var(--color-expense);
+  color: #ffffff;
+  border-color: var(--color-expense);
+  box-shadow: 0 4px 10px rgba(217, 20, 41, 0.2);
+}
+
+.form-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1.75rem;
+}
+
+.modal-actions .btn {
+  flex: 1;
+}
+
+/* --- ANIMACIONES GLOBALES --- */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn var(--transition-normal) forwards;
+}
+
+.animate-slide-up {
+  animation: slideUp var(--transition-normal) forwards;
+}
+
+/* --- RESPONSIVIDAD GENERAL --- */
+@media (max-width: 640px) {
+  .form-grid-2 {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  
+  .navbar-container {
+    height: 4rem;
+  }
+  
+  .brand-title {
+    font-size: 1.15rem;
+  }
+  
+  .nav-btn {
+    padding: 0.5rem 0.8rem;
+    font-size: 0.85rem;
+  }
+  
+  .nav-btn span {
+    display: none;
+  }
+  
+  .main-content {
+    padding: 1.25rem 1rem;
+  }
+}
