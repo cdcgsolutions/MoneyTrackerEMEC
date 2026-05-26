@@ -1,15 +1,17 @@
 /**
  * transactions.js
  * Controlador para la pestaña de Historial de Transacciones.
- * Calcula el saldo acumulado fila a fila, filtra dinámicamente y gestiona las acciones de edición y borrado.
+ * Filtra dinámicamente, muestra el saldoDespues histórico almacenado en Firestore,
+ * asocia los disparadores para editar, eliminar, ver bitácora individual y maneja el estado inactivo (Soft Delete).
  */
 
 export class TransactionsTable {
-  constructor(containerId, { onEdit, onDelete, onOpenModal }) {
+  constructor(containerId, { onEdit, onDelete, onOpenModal, onOpenAuditLog }) {
     this.container = document.getElementById(containerId);
     this.onEdit = onEdit;
     this.onDelete = onDelete;
     this.onOpenModal = onOpenModal;
+    this.onOpenAuditLog = onOpenAuditLog;
     this.currentFilter = 'todas'; // 'todas', 'ingresos', 'egresos'
   }
 
@@ -25,44 +27,28 @@ export class TransactionsTable {
   }
 
   /**
-   * Procesa las transacciones ordenándolas cronológicamente para calcular el
-   * saldo acumulado (Running Balance), luego filtra y las devuelve en orden más reciente primero.
+   * Procesa la lista de transacciones ya ordenadas desde Firestore.
+   * Filtra por tipo de movimiento y revierte el orden para mostrar el más reciente arriba.
    */
   processTransactions(transactions) {
-    // 1. Clonar y ordenar ascendentemente por fecha para calcular el saldo acumulado progresivo
-    const sortedAsc = [...transactions].sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
+    let filtered = transactions;
     
-    let runningBalance = 0;
-    const processed = sortedAsc.map(t => {
-      const amt = parseFloat(t.monto) || 0;
-      if (t.tipo === 'ingreso') {
-        runningBalance += amt;
-      } else {
-        runningBalance -= amt;
-      }
-      return {
-        ...t,
-        saldoCalculado: runningBalance
-      };
-    });
-
-    // 2. Aplicar el filtro de tipo seleccionado
-    let filtered = processed;
     if (this.currentFilter === 'ingresos') {
-      filtered = processed.filter(t => t.tipo === 'ingreso');
+      filtered = transactions.filter(t => t.tipo === 'ingreso');
     } else if (this.currentFilter === 'egresos') {
-      filtered = processed.filter(t => t.tipo === 'egreso');
+      filtered = transactions.filter(t => t.tipo === 'egreso');
     }
 
-    // 3. Devolver ordenado de forma descendente (más reciente arriba) para mostrarlo al usuario
-    return filtered.reverse();
+    // Invertir copia para que las más recientes aparezcan al inicio de la tabla
+    return [...filtered].reverse();
   }
 
   /**
    * Renderiza el panel principal de historial y la tabla.
    * @param {Array} transactions - Arreglo global de transacciones
+   * @param {Object} categoryMap - Mapeo id -> nombre de categorías
    */
-  render(transactions) {
+  render(transactions, categoryMap = {}) {
     if (!this.container) return;
 
     const processedData = this.processTransactions(transactions);
@@ -80,10 +66,12 @@ export class TransactionsTable {
           <button class="filter-btn ${this.currentFilter === 'egresos' ? 'active' : ''}" data-filter="egresos">Egresos</button>
         </div>
 
-        <button id="transactions-add-btn" class="btn btn-primary">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-          Agregar Registro
-        </button>
+        <div class="transactions-actions">
+          <button id="transactions-add-btn" class="btn btn-primary" style="display: flex; align-items: center;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.5rem;"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            Agregar Registro
+          </button>
+        </div>
       </div>
 
       <!-- Tabla de Datos -->
@@ -92,17 +80,18 @@ export class TransactionsTable {
           <table class="tx-table">
             <thead>
               <tr>
-                <th style="width: 15%">Fecha</th>
-                <th style="width: 35%">Descripción</th>
-                <th style="width: 15%">Categoría</th>
-                <th style="text-align: right; width: 12%">Ingreso</th>
-                <th style="text-align: right; width: 12%">Egreso</th>
-                <th style="text-align: right; width: 15%">Saldo Total</th>
-                <th style="text-align: center; width: 11%">Acciones</th>
+                <th style="width: 13%">Fecha</th>
+                <th style="width: 25%">Descripción</th>
+                <th style="width: 14%">Categoría</th>
+                <th style="width: 12%; text-align: center;">Estado</th>
+                <th style="text-align: right; width: 11%">Ingreso</th>
+                <th style="text-align: right; width: 11%">Egreso</th>
+                <th style="text-align: right; width: 12%">Saldo Total</th>
+                <th style="text-align: center; width: 12%">Acciones</th>
               </tr>
             </thead>
             <tbody id="tx-table-body">
-              ${processedData.length === 0 ? this.renderEmptyRow() : processedData.map(t => this.renderTableRow(t)).join('')}
+              ${processedData.length === 0 ? this.renderEmptyRow() : processedData.map(t => this.renderTableRow(t, categoryMap)).join('')}
             </tbody>
           </table>
         </div>
@@ -114,7 +103,7 @@ export class TransactionsTable {
     filterButtons.forEach(btn => {
       btn.addEventListener('click', (e) => {
         this.currentFilter = e.target.getAttribute('data-filter');
-        this.render(transactions); // Re-renderizar la vista con el filtro aplicado
+        this.render(transactions, categoryMap);
       });
     });
 
@@ -123,11 +112,19 @@ export class TransactionsTable {
       if (this.onOpenModal) this.onOpenModal();
     });
 
-    // Botones Editar y Eliminar de las filas
+    // Botones Editar, Eliminar y Bitácora de las filas
     const tableBody = document.getElementById('tx-table-body');
     
+    // Ver Bitácora
+    tableBody.querySelectorAll('.btn-audit').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const id = e.currentTarget.getAttribute('data-id');
+        if (this.onOpenAuditLog) this.onOpenAuditLog(id);
+      });
+    });
+
     // Editar
-    tableBody.querySelectorAll('.btn-edit').forEach(btn => {
+    tableBody.querySelectorAll('.btn-edit:not([disabled])').forEach(btn => {
       btn.addEventListener('click', (e) => {
         const id = e.currentTarget.getAttribute('data-id');
         if (this.onEdit) this.onEdit(id);
@@ -135,10 +132,10 @@ export class TransactionsTable {
     });
 
     // Eliminar
-    tableBody.querySelectorAll('.btn-delete').forEach(btn => {
+    tableBody.querySelectorAll('.btn-delete:not([disabled])').forEach(btn => {
       btn.addEventListener('click', (e) => {
         const id = e.currentTarget.getAttribute('data-id');
-        if (confirm('¿Estás seguro de eliminar este registro? Esto recalculará todo tu historial de saldos.')) {
+        if (confirm('¿Estás seguro de anular este registro? Se dará de baja lógica y se recalculará todo el historial contable.')) {
           if (this.onDelete) this.onDelete(id);
         }
       });
@@ -151,45 +148,59 @@ export class TransactionsTable {
   renderEmptyRow() {
     return `
       <tr>
-        <td colspan="7" style="text-align: center; padding: 3rem 1.5rem; color: var(--text-secondary);">
+        <td colspan="8" style="text-align: center; padding: 3rem 1.5rem; color: var(--text-secondary);">
           <div style="font-size: 1.5rem; color: var(--text-muted); margin-bottom: 0.5rem;">
-            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather feather-info"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
           </div>
-          No se encontraron registros de movimientos con el filtro seleccionado.
+          No se encontraron registros de movimientos en esta sección.
         </td>
       </tr>
     `;
   }
 
   /**
-   * Renderiza el marcado HTML de una fila de tabla.
+   * Renderiza el marcado HTML de una fila de tabla usando categorías dinámicas y saldoDespues de Firestore.
    */
-  renderTableRow(t) {
+  renderTableRow(t, categoryMap) {
     const isIncome = t.tipo === 'ingreso';
-    const cleanCategory = t.categoria.toLowerCase();
+    const categoryName = categoryMap[t.categoriaId] || 'Otros';
+    const cleanCategorySlug = categoryName.toLowerCase();
+    const cleanTxId = t.id;
+    const isActive = t.activo !== false;
+
+    // Badge de estado de la transacción
+    const statusBadge = isActive
+      ? `<span class="status-badge active-status" style="background-color: rgba(40, 167, 69, 0.08); color: #28a745; border: 1px solid rgba(40, 167, 69, 0.15); padding: 0.25rem 0.5rem; border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 600;">Activo</span>`
+      : `<span class="status-badge inactive-status" style="background-color: rgba(108, 117, 125, 0.08); color: #6c757d; border: 1px solid rgba(108, 117, 125, 0.15); padding: 0.25rem 0.5rem; border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 600;">Anulado</span>`;
 
     return `
-      <tr class="${t.tipo}-row">
+      <tr class="${t.tipo}-row ${isActive ? '' : 'tx-inactive'}" style="${isActive ? '' : 'opacity: 0.55; background-color: #f8f9fa;'}">
         <td class="tx-date cell-date">${t.fecha}</td>
-        <td class="tx-desc cell-desc">${this.escapeHtml(t.descripcion)}</td>
-        <td class="cell-category">
-          <span class="category-badge" data-cat="${cleanCategory}">${t.categoria}</span>
+        <td class="tx-desc cell-desc" title="ID: ${cleanTxId}" style="${isActive ? '' : 'text-decoration: line-through;'}">${this.escapeHtml(t.descripcion)}</td>
+        <td class="cell-category" style="color: var(--text-secondary); font-weight: 500;">
+          ${categoryName}
         </td>
-        <td class="tx-amount income cell-amount-in" style="text-align: right;">
+        <td class="cell-status" style="text-align: center;">
+          ${statusBadge}
+        </td>
+        <td class="tx-amount income cell-amount-in" style="text-align: right; ${isActive ? '' : 'text-decoration: line-through;'}">
           ${isIncome ? this.formatMoney(t.monto) : '—'}
         </td>
-        <td class="tx-amount expense cell-amount-out" style="text-align: right;">
+        <td class="tx-amount expense cell-amount-out" style="text-align: right; ${isActive ? '' : 'text-decoration: line-through;'}">
           ${!isIncome ? this.formatMoney(t.monto) : '—'}
         </td>
-        <td class="tx-balance cell-balance ${t.saldoCalculado >= 0 ? 'positive' : 'negative'}" style="text-align: right;">
-          ${this.formatMoney(t.saldoCalculado)}
+        <td class="tx-balance cell-balance ${t.saldoDespues >= 0 ? 'positive' : 'negative'}" style="text-align: right; font-weight: 600;">
+          ${this.formatMoney(t.saldoDespues)}
         </td>
         <td class="cell-actions">
           <div class="actions-cell">
-            <button class="action-btn btn-edit" data-id="${t.id}" title="Editar Transacción">
+            <button class="action-btn btn-audit" data-id="${t.id}" title="Ver Bitácora del Movimiento #${cleanTxId}" style="color: var(--primary-red); border-color: rgba(220,53,69,0.15); background: rgba(220,53,69,0.03);">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+            </button>
+            <button class="action-btn btn-edit" data-id="${t.id}" title="Editar Movimiento #${cleanTxId}" ${isActive ? '' : 'disabled style="pointer-events: none; opacity: 0.25;"'}>
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4Z"></path></svg>
             </button>
-            <button class="action-btn btn-delete" data-id="${t.id}" title="Eliminar Transacción">
+            <button class="action-btn btn-delete" data-id="${t.id}" title="Eliminar Movimiento #${cleanTxId}" ${isActive ? '' : 'disabled style="pointer-events: none; opacity: 0.25;"'}>
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
             </button>
           </div>

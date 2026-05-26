@@ -1,7 +1,8 @@
 /**
  * dashboard.js
  * Controlador para la pestaña de Resumen General / Dashboard.
- * Calcula métricas financieras en tiempo real y renderiza los últimos movimientos.
+ * Calcula métricas financieras en tiempo real omitiendo transacciones inactivas (soft deleted)
+ * y renderiza los últimos movimientos activos con categorías dinámicas.
  */
 
 export class Dashboard {
@@ -24,17 +25,20 @@ export class Dashboard {
 
   /**
    * Procesa la lista de transacciones para obtener balances consolidados.
+   * Excluye las transacciones inactivas (soft delete) del cálculo.
    */
   calculateMetrics(transactions) {
     let totalIncome = 0;
     let totalExpense = 0;
-
+ 
     transactions.forEach(t => {
-      const amt = parseFloat(t.monto) || 0;
-      if (t.tipo === 'ingreso') {
-        totalIncome += amt;
-      } else {
-        totalExpense += amt;
+      if (t.activo !== false) {
+        const amt = parseFloat(t.monto) || 0;
+        if (t.tipo === 'ingreso') {
+          totalIncome += amt;
+        } else {
+          totalExpense += amt;
+        }
       }
     });
 
@@ -48,15 +52,22 @@ export class Dashboard {
   /**
    * Dibuja toda la vista del Dashboard.
    * @param {Array} transactions - Arreglo global de transacciones
+   * @param {Object} categoryMap - Mapeo id -> nombre de categorías dinámicas
    */
-  render(transactions) {
+  render(transactions, categoryMap = {}) {
     if (!this.container) return;
 
     const metrics = this.calculateMetrics(transactions);
     
-    // Obtener los últimos 5 movimientos ordenados por fecha de más reciente a más antiguo
-    const recentTransactions = [...transactions]
-      .sort((a, b) => new Date(b.fecha) - new Date(a.fecha))
+    // Obtener únicamente los últimos 5 movimientos ACTIVOS ordenados del más reciente al más antiguo
+    // Se ordena cronológicamente descendente y, si coinciden en fecha, por ID numérico descendente
+    const activeTransactions = transactions.filter(t => t.activo !== false);
+    const recentTransactions = [...activeTransactions]
+      .sort((a, b) => {
+        const dateDiff = new Date(b.fecha) - new Date(a.fecha);
+        if (dateDiff !== 0) return dateDiff;
+        return Number(b.id) - Number(a.id);
+      })
       .slice(0, 5);
 
     const isBalancePositive = metrics.balance >= 0;
@@ -72,7 +83,7 @@ export class Dashboard {
           Nuevo Registro
         </button>
       </div>
-
+ 
       <!-- KPI Grid -->
       <div class="kpi-grid animate-fade-in">
         <!-- Balance -->
@@ -121,9 +132,9 @@ export class Dashboard {
           <h3 class="recent-title">Últimos Movimientos</h3>
         </div>
         <div class="recent-list" id="recent-transactions-list">
-          ${recentTransactions.length === 0 ? this.renderEmptyState() : recentTransactions.map(t => this.renderTransactionItem(t)).join('')}
+          ${recentTransactions.length === 0 ? this.renderEmptyState() : recentTransactions.map(t => this.renderTransactionItem(t, categoryMap)).join('')}
         </div>
-        ${transactions.length > 5 ? `
+        ${activeTransactions.length > 5 ? `
           <button id="dashboard-view-all-btn" class="view-all-link">
             Ver todo el historial
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
@@ -162,14 +173,16 @@ export class Dashboard {
 
   /**
    * Genera el marcado HTML para un movimiento reciente individual.
+   * Aplica color verde al icono de suma (ingreso) y color rojo al icono de resta (egreso).
    */
-  renderTransactionItem(t) {
+  renderTransactionItem(t, categoryMap) {
     const isIncome = t.tipo === 'ingreso';
+    const categoryName = categoryMap[t.categoriaId] || 'Otros';
     
-    // Icono correspondiente
+    // Icono correspondiente con color verde para suma y rojo para resta (solo la flechita/stroke)
     const iconSvg = isIncome 
-      ? `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline></svg>`
-      : `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"></polyline></svg>`;
+      ? `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="var(--color-income)" stroke-width="2.75"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline></svg>`
+      : `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="var(--color-expense)" stroke-width="2.75"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"></polyline></svg>`;
 
     return `
       <div class="recent-item ${t.tipo}">
@@ -182,7 +195,7 @@ export class Dashboard {
             <div class="recent-meta">
               <span>${t.fecha}</span>
               <span class="recent-meta-separator"></span>
-              <span style="font-weight: 500;">${t.categoria}</span>
+              <span style="font-weight: 500;">${categoryName}</span>
             </div>
           </div>
         </div>
