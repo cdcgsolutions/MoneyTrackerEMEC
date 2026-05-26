@@ -1,53 +1,40 @@
-/**
- * style.css
- * Estilos globales y tokens de diseño para MoneyTrackerEMEC.
- * Diseño minimalista premium en blanco con acentos rojos.
- */
-
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
 
-/* --- VARIABLES / DESIGN SYSTEM --- */
 :root {
-  /* Colores Acento (Rojo Premium) */
+
   --primary-red: hsl(353, 85%, 46%);
   --primary-red-hover: hsl(353, 90%, 38%);
   --primary-red-light: hsl(353, 85%, 96%);
   --primary-red-focus: hsla(353, 85%, 46%, 0.15);
-  
-  /* Colores de Estado */
+
   --color-income: hsl(162, 76%, 33%);
   --color-income-light: hsl(162, 70%, 96%);
   --color-expense: var(--primary-red);
   --color-expense-light: var(--primary-red-light);
-  
-  /* Paleta Neutra (Blanco y Slate) */
+
   --bg-main: hsl(210, 20%, 98%);
   --bg-card: #ffffff;
   --border-color: hsl(214, 15%, 91%);
   --border-focus: var(--primary-red);
-  
+
   --text-main: hsl(222, 47%, 12%);
   --text-secondary: hsl(215, 16%, 45%);
   --text-muted: hsl(215, 13%, 65%);
-  
-  /* Sombras Modernas (Soft Elevation) */
+
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.03);
   --shadow-md: 0 4px 12px -1px rgba(0, 0, 0, 0.04), 0 2px 4px -1px rgba(0, 0, 0, 0.02);
   --shadow-lg: 0 12px 24px -4px rgba(0, 0, 0, 0.06), 0 4px 8px -2px rgba(0, 0, 0, 0.02);
   --shadow-modal: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-  
-  /* Radio de Bordes */
+
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 16px;
   --radius-full: 9999px;
 
-  /* Transiciones */
   --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
   --transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* --- RESET & ESTRUCTURA BASE --- */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -63,7 +50,6 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* --- DISEÑO DEL CONTENEDOR --- */
 .app-container {
   display: flex;
   flex-direction: column;
@@ -78,7 +64,6 @@ body {
   padding: 2rem 1.5rem;
 }
 
-/* --- STICKY NAVBAR --- */
 .navbar {
   background-color: var(--bg-card);
   border-bottom: 1px solid var(--border-color);
@@ -167,7 +152,6 @@ body {
   stroke-width: 2.2;
 }
 
-/* --- COMPONENTE DE BOTÓN GLOBAL --- */
 .btn {
   font-family: inherit;
   display: inline-flex;
@@ -220,7 +204,6 @@ body {
   border-color: var(--text-muted);
 }
 
-/* --- MODAL DIALOG / FORMULARIO --- */
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -298,7 +281,6 @@ body {
   padding: 1.5rem;
 }
 
-/* Formulario inside modal */
 .form-group {
   margin-bottom: 1.25rem;
 }
@@ -347,7 +329,6 @@ body {
   padding-left: 2rem;
 }
 
-/* Selector Segmentado de Tipo */
 .type-segmented-control {
   display: grid;
   grid-cols: 2;
@@ -411,7 +392,6 @@ body {
   flex: 1;
 }
 
-/* --- ANIMACIONES GLOBALES --- */
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
@@ -436,36 +416,34 @@ body {
   animation: slideUp var(--transition-normal) forwards;
 }
 
-/* --- RESPONSIVIDAD GENERAL --- */
 @media (max-width: 640px) {
   .form-grid-2 {
     grid-template-columns: 1fr;
     gap: 0;
   }
-  
+
   .navbar-container {
     height: 4rem;
   }
-  
+
   .brand-title {
     font-size: 1.15rem;
   }
-  
+
   .nav-btn {
     padding: 0.5rem 0.8rem;
     font-size: 0.85rem;
   }
-  
+
   .nav-btn span {
     display: none;
   }
-  
+
   .main-content {
     padding: 1.25rem 1rem;
   }
 }
 
-/* --- INITIAL LOADING SCREEN (FIREBASE SYNCING) --- */
 .app-loading-overlay {
   position: fixed;
   inset: 0;
@@ -511,7 +489,6 @@ body {
   to { transform: rotate(360deg); }
 }
 
-/* --- DIAGNOSTIC ERROR CARDS (FIREBASE HELPERS) --- */
 .diagnostic-card {
   background-color: var(--bg-card);
   border-radius: var(--radius-lg);
@@ -640,7 +617,6 @@ body {
   font-size: 0.8rem;
 }
 
-/* --- LOGIN SCREEN STYLES --- */
 .login-overlay {
   position: fixed;
   inset: 0;
@@ -712,7 +688,6 @@ body {
   animation: fadeIn var(--transition-fast) forwards;
 }
 
-/* --- LOGOUT BUTTON IN NAVBAR --- */
 .navbar-actions {
   margin-left: auto;
 }
@@ -756,7 +731,6 @@ body {
   }
 }
 
-/* --- CONTRASEÑA SHOW/HIDE Y SPINNER EN LOGIN --- */
 .password-wrapper {
   position: relative;
   display: flex;
@@ -795,11 +769,6 @@ body {
   flex-shrink: 0;
 }
 
-/* ==========================================================================
-   ESTILOS ADICIONALES PARA TRANSACCIONES ANULADAS Y BITÁCORA
-   ========================================================================== */
-
-/* Filas inactivas (Soft Delete) */
 .tx-inactive {
   background-color: #f8f9fa !important;
   transition: background-color var(--transition-normal);
@@ -809,7 +778,6 @@ body {
   background-color: #f1f3f5 !important;
 }
 
-/* Aplicar opacidad reducida solo a los datos del registro, manteniendo las acciones al 100% */
 .tx-inactive td:not(.cell-actions) {
   opacity: 0.55;
 }
@@ -820,7 +788,6 @@ body {
   font-style: italic;
 }
 
-/* Modal de Bitácora - Mejoras responsivas y estéticas */
 #audit-modal .table-responsive {
   scrollbar-width: thin;
   scrollbar-color: var(--border-color) transparent;
@@ -840,7 +807,6 @@ body {
   background-color: rgba(220, 53, 69, 0.02);
 }
 
-/* Indicación visual de bloqueo en modal de transacciones al editar */
 .form-control:disabled {
   background-color: #f1f3f5;
   color: #6c757d;
@@ -854,7 +820,6 @@ body {
   pointer-events: none;
 }
 
-/* --- PAGINACION DE ESTILO PREMIUM (MUDBLAZOR INSPIRADO) --- */
 .pagination-container {
   display: flex;
   justify-content: space-between;
@@ -917,7 +882,6 @@ body {
   height: 16px;
 }
 
-/* Ajustes especiales para dashboard list */
 .dashboard-pagination {
   margin-top: 0.5rem;
   border-radius: var(--radius-lg);
@@ -933,18 +897,18 @@ body {
     align-items: center;
     justify-content: center;
   }
-  
+
   .pagination-left {
     text-align: center;
     width: 100%;
   }
-  
+
   .pagination-right {
     width: 100%;
     justify-content: center;
     gap: 0.5rem;
   }
-  
+
   .pagination-page-indicator {
     min-width: 65px;
     font-size: 0.8rem;
@@ -954,4 +918,56 @@ body {
     width: 36px;
     height: 36px;
   }
+}
+
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loading-overlay .loading-spinner-container {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  padding: 2.25rem 3rem;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  text-align: center;
+  max-width: 90%;
+}
+
+.loading-overlay .loading-spinner {
+  width: 44px;
+  height: 44px;
+  border: 4px solid var(--border-color);
+  border-top: 4px solid var(--primary-red);
+  border-radius: 50%;
+  animation: spinGlobalOverlay 0.8s linear infinite;
+}
+
+.loading-overlay .loading-message {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--text-main);
+  margin: 0;
+  letter-spacing: 0.1px;
+}
+
+@keyframes spinGlobalOverlay {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }

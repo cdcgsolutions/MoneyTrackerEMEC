@@ -1,10 +1,3 @@
-/**
- * dashboard.css
- * Estilos específicos para la vista de Dashboard en MoneyTrackerEMEC.
- * Grid de KPIs, tarjetas premium, y lista de movimientos rápidos.
- */
-
-/* --- HERO / ENCABEZADO --- */
 .dashboard-header {
   display: flex;
   justify-content: space-between;
@@ -25,7 +18,6 @@
   color: var(--text-secondary);
 }
 
-/* --- GRID DE TARJETAS (KPI CARDS) --- */
 .kpi-grid {
   display: grid;
   grid-template-columns: 1.40fr 0.80fr 0.80fr;
@@ -67,7 +59,6 @@
   box-shadow: var(--shadow-md);
 }
 
-/* Fondo decorativo sutil en las tarjetas */
 .kpi-card::before {
   content: '';
   position: absolute;
@@ -164,7 +155,6 @@
   color: var(--color-expense);
 }
 
-/* --- SECCIÓN MOVIMIENTOS RECIENTES --- */
 .recent-section {
   background-color: var(--bg-card);
   border: 1px solid var(--border-color);
@@ -211,7 +201,6 @@
   box-shadow: var(--shadow-sm);
 }
 
-/* Hover de filas con bordes rojos discretos */
 .recent-item:hover {
   border-left: 3px solid var(--primary-red);
 }
@@ -337,17 +326,16 @@
   transition: var(--transition-fast);
 }
 
-/* --- RESPONSIVIDAD --- */
 @media (max-width: 900px) {
   .kpi-grid {
     grid-template-columns: 1fr;
     gap: 1rem;
   }
-  
+
   .kpi-card {
     padding: 1.5rem;
   }
-  
+
   .kpi-value {
     font-size: 2rem;
   }
@@ -359,15 +347,15 @@
     align-items: stretch;
     gap: 1rem;
   }
-  
+
   .dashboard-header .btn {
     width: 100%;
   }
-  
+
   .recent-section {
     padding: 1.25rem;
   }
-  
+
   .recent-item {
     padding: 1.15rem 1rem;
     align-items: flex-start;
@@ -398,7 +386,7 @@
     flex-wrap: wrap;
     gap: 0.35rem;
   }
-  
+
   .recent-amount {
     font-size: 1.05rem;
     font-weight: 700;

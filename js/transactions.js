@@ -1,10 +1,3 @@
-/**
- * transactions.js
- * Controlador para la pestaña de Historial de Transacciones.
- * Filtra dinámicamente, muestra el saldoDespues histórico almacenado en Firestore,
- * asocia los disparadores para editar, eliminar, ver bitácora individual y maneja el estado inactivo (Soft Delete).
- */
-
 export class TransactionsTable {
   constructor(containerId, { onEdit, onDelete, onOpenModal, onOpenAuditLog }) {
     this.container = document.getElementById(containerId);
@@ -12,56 +5,42 @@ export class TransactionsTable {
     this.onDelete = onDelete;
     this.onOpenModal = onOpenModal;
     this.onOpenAuditLog = onOpenAuditLog;
-    this.currentFilter = 'todas'; // 'todas', 'ingresos', 'egresos'
+    this.currentFilter = 'todas';
     this.currentPage = 1;
     this.pageSize = 10;
   }
 
-  /**
-   * Formatea un número decimal como moneda BOB (Boliviano)
-   */
   formatMoney(amount) {
-    return new Intl.NumberFormat('es-BO', { 
-      style: 'currency', 
+    return new Intl.NumberFormat('es-BO', {
+      style: 'currency',
       currency: 'BOB',
-      minimumFractionDigits: 2 
+      minimumFractionDigits: 2
     }).format(amount);
   }
 
-  /**
-   * Procesa la lista de transacciones ya ordenadas desde Firestore.
-   * Filtra por tipo de movimiento y revierte el orden para mostrar el más reciente arriba.
-   */
   processTransactions(transactions) {
     let filtered = transactions;
-    
+
     if (this.currentFilter === 'ingresos') {
       filtered = transactions.filter(t => t.tipo === 'ingreso');
     } else if (this.currentFilter === 'egresos') {
       filtered = transactions.filter(t => t.tipo === 'egreso');
     }
 
-    // Invertir copia para que las más recientes aparezcan al inicio de la tabla
     return [...filtered].reverse();
   }
 
-  /**
-   * Renderiza el panel principal de historial y la tabla.
-   * @param {Array} transactions - Arreglo global de transacciones
-   * @param {Object} categoryMap - Mapeo id -> nombre de categorías
-   */
   render(transactions, categoryMap = {}) {
     if (!this.container) return;
 
     const processedData = this.processTransactions(transactions);
-    
-    // Paginación lógica
+
     const totalItems = processedData.length;
     const totalPages = Math.ceil(totalItems / this.pageSize) || 1;
     if (this.currentPage > totalPages) {
       this.currentPage = 1;
     }
-    
+
     const startIndex = (this.currentPage - 1) * this.pageSize;
     const endIndex = Math.min(startIndex + this.pageSize, totalItems);
     const paginatedData = processedData.slice(startIndex, endIndex);
@@ -71,7 +50,7 @@ export class TransactionsTable {
         <div class="transactions-title-group">
           <h1>Historial de Transacciones</h1>
         </div>
-        
+
         <!-- Barra de filtros -->
         <div class="filter-bar">
           <button class="filter-btn ${this.currentFilter === 'todas' ? 'active' : ''}" data-filter="todas">Todas</button>
@@ -109,7 +88,7 @@ export class TransactionsTable {
             </tbody>
           </table>
         </div>
-        
+
         <!-- Paginación estilo MudBlazor -->
         <div class="pagination-container">
           <div class="pagination-left">
@@ -134,7 +113,6 @@ export class TransactionsTable {
       </div>
     `;
 
-    // Asignar listeners de filtros
     const filterButtons = this.container.querySelectorAll('.filter-btn');
     filterButtons.forEach(btn => {
       btn.addEventListener('click', (e) => {
@@ -144,7 +122,6 @@ export class TransactionsTable {
       });
     });
 
-    // Listeners de paginación
     const btnFirst = this.container.querySelector('.btn-first');
     const btnPrev = this.container.querySelector('.btn-prev');
     const btnNext = this.container.querySelector('.btn-next');
@@ -179,15 +156,12 @@ export class TransactionsTable {
       });
     }
 
-    // Botón Agregar
     document.getElementById('transactions-add-btn').addEventListener('click', () => {
       if (this.onOpenModal) this.onOpenModal();
     });
 
-    // Botones Editar, Eliminar y Bitácora de las filas
     const tableBody = document.getElementById('tx-table-body');
-    
-    // Ver Bitácora
+
     tableBody.querySelectorAll('.btn-audit').forEach(btn => {
       btn.addEventListener('click', (e) => {
         const id = e.currentTarget.getAttribute('data-id');
@@ -195,7 +169,6 @@ export class TransactionsTable {
       });
     });
 
-    // Editar
     tableBody.querySelectorAll('.btn-edit:not([disabled])').forEach(btn => {
       btn.addEventListener('click', (e) => {
         const id = e.currentTarget.getAttribute('data-id');
@@ -203,7 +176,6 @@ export class TransactionsTable {
       });
     });
 
-    // Eliminar
     tableBody.querySelectorAll('.btn-delete:not([disabled])').forEach(btn => {
       btn.addEventListener('click', (e) => {
         const id = e.currentTarget.getAttribute('data-id');
@@ -214,9 +186,6 @@ export class TransactionsTable {
     });
   }
 
-  /**
-   * Renderiza una fila vacía indicando que no hay transacciones en ese filtro.
-   */
   renderEmptyRow() {
     return `
       <tr>
@@ -230,9 +199,6 @@ export class TransactionsTable {
     `;
   }
 
-  /**
-   * Renderiza el marcado HTML de una fila de tabla usando categorías dinámicas y saldoDespues de Firestore.
-   */
   renderTableRow(t, categoryMap) {
     const isIncome = t.tipo === 'ingreso';
     const categoryName = categoryMap[t.categoriaId] || 'Otros';
@@ -241,11 +207,10 @@ export class TransactionsTable {
     const isActive = t.activo !== false;
     const amt = parseFloat(t.monto) || 0;
     const saldoDespues = parseFloat(t.saldoDespues) || 0;
-    
+
     const amtApplied = isActive ? amt : 0;
     const saldoAntes = isIncome ? (saldoDespues - amtApplied) : (saldoDespues + amtApplied);
 
-    // Badge de estado de la transacción
     const statusBadge = isActive
       ? `<span class="status-badge active-status" style="background-color: rgba(40, 167, 69, 0.08); color: #28a745; border: 1px solid rgba(40, 167, 69, 0.15); padding: 0.25rem 0.5rem; border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 600;">Activo</span>`
       : `<span class="status-badge inactive-status" style="background-color: rgba(108, 117, 125, 0.08); color: #6c757d; border: 1px solid rgba(108, 117, 125, 0.15); padding: 0.25rem 0.5rem; border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 600;">Anulado</span>`;
@@ -289,9 +254,6 @@ export class TransactionsTable {
     `;
   }
 
-  /**
-   * Helper para evitar XSS al renderizar texto del usuario.
-   */
   escapeHtml(str) {
     const div = document.createElement('div');
     div.innerText = str;

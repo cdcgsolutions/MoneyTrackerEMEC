@@ -1,11 +1,3 @@
-/**
- * dashboard.js
- * Controlador para la pestaña de Resumen General / Dashboard.
- * Calcula métricas financieras en tiempo real omitiendo transacciones inactivas (soft deleted)
- * para mantener la integridad contable de balances, ingresos y egresos.
- * Renderiza los últimos movimientos con desglose de flujo contable y soporte de paginación (de 10 en 10).
- */
-
 export class Dashboard {
   constructor(containerId, { onNavigateToTransactions, onOpenModal }) {
     this.container = document.getElementById(containerId);
@@ -15,9 +7,6 @@ export class Dashboard {
     this.pageSize = 10;
   }
 
-  /**
-   * Formatea un número decimal como moneda BOB (Boliviano)
-   */
   formatMoney(amount) {
     return new Intl.NumberFormat('es-BO', {
       style: 'currency',
@@ -26,10 +15,6 @@ export class Dashboard {
     }).format(amount);
   }
 
-  /**
-   * Procesa la lista de transacciones para obtener balances consolidados.
-   * Excluye las transacciones inactivas (soft delete / anuladas) del cálculo contable.
-   */
   calculateMetrics(transactions) {
     let totalIncome = 0;
     let totalExpense = 0;
@@ -52,17 +37,11 @@ export class Dashboard {
     };
   }
 
-  /**
-   * Dibuja toda la vista del Dashboard con paginación integrada para los movimientos.
-   * @param {Array} transactions - Arreglo global de transacciones
-   * @param {Object} categoryMap - Mapeo id -> nombre de categorías dinámicas
-   */
   render(transactions, categoryMap = {}) {
     if (!this.container) return;
 
     const metrics = this.calculateMetrics(transactions);
 
-    // Obtener los movimientos ordenados cronológicamente descendente y por ID descendente
     const sortedTransactions = [...transactions]
       .sort((a, b) => {
         const dateDiff = new Date(b.fecha) - new Date(a.fecha);
@@ -70,7 +49,6 @@ export class Dashboard {
         return Number(b.id) - Number(a.id);
       });
 
-    // Paginación del Dashboard (de 10 en 10 registros)
     const totalItems = sortedTransactions.length;
     const totalPages = Math.ceil(totalItems / this.pageSize) || 1;
     if (this.currentPage > totalPages) {
@@ -94,7 +72,7 @@ export class Dashboard {
           Nuevo Registro
         </button>
       </div>
- 
+
       <!-- KPI Grid -->
       <div class="kpi-grid animate-fade-in">
         <!-- Balance -->
@@ -146,11 +124,11 @@ export class Dashboard {
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width: 14px; height: 14px;"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
           </button>
         </div>
-        
+
         <div class="recent-list" id="recent-transactions-list" style="display: flex; flex-direction: column; gap: 0.75rem;">
           ${paginatedRecent.length === 0 ? this.renderEmptyState() : paginatedRecent.map(t => this.renderTransactionItem(t, categoryMap)).join('')}
         </div>
-        
+
         <!-- Paginación estilo MudBlazor para Movimientos -->
         ${totalItems > 0 ? `
           <div class="pagination-container dashboard-pagination">
@@ -177,7 +155,6 @@ export class Dashboard {
       </div>
     `;
 
-    // Asignar listeners de eventos
     document.getElementById('dashboard-new-tx-btn').addEventListener('click', () => {
       if (this.onOpenModal) this.onOpenModal();
     });
@@ -189,7 +166,6 @@ export class Dashboard {
       });
     }
 
-    // Listeners de paginación del Dashboard
     const btnDashFirst = this.container.querySelector('.btn-dash-first');
     const btnDashPrev = this.container.querySelector('.btn-dash-prev');
     const btnDashNext = this.container.querySelector('.btn-dash-next');
@@ -225,9 +201,6 @@ export class Dashboard {
     }
   }
 
-  /**
-   * Renderiza el estado vacío si no hay movimientos.
-   */
   renderEmptyState() {
     return `
       <div class="empty-state">
@@ -240,11 +213,6 @@ export class Dashboard {
     `;
   }
 
-  /**
-   * Genera el marcado HTML para un movimiento reciente individual.
-   * Muestra el desglose de flujo contable completo:
-   * Saldo Anterior, Monto Aplicado (+/-) y Saldo Resultante (acumulado).
-   */
   renderTransactionItem(t, categoryMap) {
     const isIncome = t.tipo === 'ingreso';
     const isActive = t.activo !== false;
@@ -252,11 +220,9 @@ export class Dashboard {
     const amt = parseFloat(t.monto) || 0;
     const saldoDespues = parseFloat(t.saldoDespues) || 0;
 
-    // Si la transacción está dada de baja, su impacto contable real en el flujo fue de 0
     const amtApplied = isActive ? amt : 0;
     const saldoAntes = isIncome ? (saldoDespues - amtApplied) : (saldoDespues + amtApplied);
 
-    // Icono correspondiente con color verde para suma y rojo para resta (solo la flechita/stroke)
     const iconSvg = isIncome
       ? `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="var(--color-income)" stroke-width="2.75"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline></svg>`
       : `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="var(--color-expense)" stroke-width="2.75"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"></polyline></svg>`;
@@ -284,7 +250,7 @@ export class Dashboard {
               <span style="font-weight: 500;">${categoryName}</span>
               ${isActive ? '' : '<span style="color: var(--text-muted); font-size: 0.75rem; font-weight: 700; text-transform: uppercase; margin-left: 0.5rem;">[Anulado]</span>'}
             </div>
-            
+
             <!-- Desglose elegante del flujo de caja (Antes, Movimiento, Después) -->
             <div class="recent-flow-details" style="margin-top: 0.65rem; padding-top: 0.5rem; border-top: 1px dashed var(--border-color); display: flex; gap: 0.6rem; font-size: 0.8rem; color: var(--text-secondary); flex-wrap: wrap; align-items: center;">
               <span>Antes: <strong style="color: var(--text-main); font-variant-numeric: tabular-nums;">${this.formatMoney(saldoAntes)}</strong></span>
@@ -299,9 +265,6 @@ export class Dashboard {
     `;
   }
 
-  /**
-   * Helper para evitar XSS al renderizar texto del usuario.
-   */
   escapeHtml(str) {
     const div = document.createElement('div');
     div.innerText = str;

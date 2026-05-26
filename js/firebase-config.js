@@ -1,31 +1,24 @@
-/**
- * firebase-config.js
- * Inicialización y configuración de los servicios de Firebase para MoneyTrackerEMEC.
- * Utiliza las librerías oficiales de Firebase a través del CDN de ES Modules.
- */
-
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
-import { 
-  getAuth, 
-  signInWithEmailAndPassword, 
-  signOut 
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  signOut
 } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
-import { 
-  getFirestore, 
-  doc, 
-  collection, 
-  getDocs, 
-  getDoc, 
-  setDoc, 
-  updateDoc, 
-  deleteDoc, 
-  query, 
-  orderBy, 
+import {
+  getFirestore,
+  doc,
+  collection,
+  getDocs,
+  getDoc,
+  setDoc,
+  updateDoc,
+  deleteDoc,
+  query,
+  orderBy,
   where,
-  runTransaction 
+  runTransaction
 } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
 
-// Configuración de Firebase provista por el usuario
 const firebaseConfig = {
   apiKey: "AIzaSyBr-jYD7m6-uZ3uMq4KwciV0HQAOXqf2bs",
   authDomain: "moneytrackeremec.firebaseapp.com",
@@ -36,28 +29,26 @@ const firebaseConfig = {
   measurementId: "G-M7MVCJLM7L"
 };
 
-// Inicializar la aplicación de Firebase
 const app = initializeApp(firebaseConfig);
 
-// Inicializar los servicios de Auth y Firestore
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-export { 
-  app, 
-  auth, 
-  db, 
+export {
+  app,
+  auth,
+  db,
   signInWithEmailAndPassword,
   signOut,
-  doc, 
-  collection, 
-  getDocs, 
-  getDoc, 
-  setDoc, 
-  updateDoc, 
-  deleteDoc, 
-  query, 
-  orderBy, 
+  doc,
+  collection,
+  getDocs,
+  getDoc,
+  setDoc,
+  updateDoc,
+  deleteDoc,
+  query,
+  orderBy,
   where,
-  runTransaction 
+  runTransaction
 };
