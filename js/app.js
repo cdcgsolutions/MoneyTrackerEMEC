@@ -47,6 +47,7 @@ class App {
     this.qrModalOverlay = document.getElementById('qr-modal');
     this.qrBtn = document.getElementById('nav-qr-btn');
 
+    this.initTheme();
     this.init();
   }
 
@@ -679,6 +680,44 @@ class App {
         ${errorDetailHtml}
       </div>
     `;
+  }
+
+  initTheme() {
+    this.themeToggleBtn = document.getElementById('theme-toggle-btn');
+    if (!this.themeToggleBtn) return;
+
+    const sunIcon = this.themeToggleBtn.querySelector('.theme-icon-sun');
+    const moonIcon = this.themeToggleBtn.querySelector('.theme-icon-moon');
+
+    const savedTheme = localStorage.getItem('theme');
+    const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    const applyTheme = (isDark) => {
+      if (isDark) {
+        document.body.classList.add('dark-theme');
+        if (sunIcon) sunIcon.style.display = 'block';
+        if (moonIcon) moonIcon.style.display = 'none';
+        localStorage.setItem('theme', 'dark');
+      } else {
+        document.body.classList.remove('dark-theme');
+        if (sunIcon) sunIcon.style.display = 'none';
+        if (moonIcon) moonIcon.style.display = 'block';
+        localStorage.setItem('theme', 'light');
+      }
+    };
+
+    // Cargar tema inicial (priorizando localStorage y luego preferencia del sistema operativo)
+    if (savedTheme === 'dark' || (!savedTheme && systemPrefersDark)) {
+      applyTheme(true);
+    } else {
+      applyTheme(false);
+    }
+
+    // Escuchador del click para alternar tema
+    this.themeToggleBtn.addEventListener('click', () => {
+      const isCurrentlyDark = document.body.classList.contains('dark-theme');
+      applyTheme(!isCurrentlyDark);
+    });
   }
 }
 

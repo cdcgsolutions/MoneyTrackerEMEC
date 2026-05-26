@@ -195,14 +195,11 @@
 }
 
 .recent-item:hover {
-  background-color: #ffffff;
+  background-color: var(--primary-red-light);
   border-color: var(--border-color);
+  border-left: 3px solid var(--primary-red);
   transform: translateX(4px);
   box-shadow: var(--shadow-sm);
-}
-
-.recent-item:hover {
-  border-left: 3px solid var(--primary-red);
 }
 
 .recent-item-left {
