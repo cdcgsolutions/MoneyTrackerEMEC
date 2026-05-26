@@ -62,10 +62,20 @@ export class Dashboard {
     const isBalancePositive = metrics.balance >= 0;
 
     this.container.innerHTML = `
-      <div class="dashboard-header animate-fade-in">
-        <div class="dashboard-title-group">
-          <h1>Resumen General</h1>
-          <p>Supervisa el estado y flujo de tus finanzas personales</p>
+      <div class="dashboard-header animate-fade-in" style="align-items: center;">
+        <div class="dashboard-title-group" style="display: flex; align-items: center; gap: 0.75rem;">
+          <div style="background-color: var(--primary-red-light); color: var(--primary-red); width: 2.75rem; height: 2.75rem; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(217, 20, 41, 0.15); flex-shrink: 0;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="7" height="9" rx="1"></rect>
+              <rect x="14" y="3" width="7" height="5" rx="1"></rect>
+              <rect x="14" y="12" width="7" height="9" rx="1"></rect>
+              <rect x="3" y="16" width="7" height="5" rx="1"></rect>
+            </svg>
+          </div>
+          <div>
+            <h1 style="margin: 0; line-height: 1.2;">Dashboard</h1>
+            <p style="margin: 0; font-size: 0.85rem; color: var(--text-secondary);">Supervisa el estado y flujo de tus finanzas personales</p>
+          </div>
         </div>
         <button id="dashboard-new-tx-btn" class="btn btn-primary">
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>

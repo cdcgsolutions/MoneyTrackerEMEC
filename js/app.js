@@ -298,7 +298,25 @@ class App {
     this.renderActiveTab();
   }
 
+  updateBrowserTab(tabName) {
+    let title = 'Dashboard';
+    let emoji = '📊';
+    if (tabName === 'tabla') {
+      title = 'Transacciones';
+      emoji = '📝';
+    }
+    document.title = title;
+    let link = document.querySelector("link[rel~='icon']");
+    if (!link) {
+      link = document.createElement('link');
+      link.rel = 'icon';
+      document.head.appendChild(link);
+    }
+    link.href = `data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>${emoji}</text></svg>`;
+  }
+
   renderActiveTab() {
+    this.updateBrowserTab(this.activeTab);
     if (this.activeTab === 'dashboard') {
       this.dashboardView.render(this.transactions, this.categoryMap);
     } else {

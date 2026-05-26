@@ -46,9 +46,22 @@ export class TransactionsTable {
     const paginatedData = processedData.slice(startIndex, endIndex);
 
     this.container.innerHTML = `
-      <div class="transactions-header animate-fade-in">
-        <div class="transactions-title-group">
-          <h1>Historial de Transacciones</h1>
+      <div class="transactions-header animate-fade-in" style="align-items: center;">
+        <div class="transactions-title-group" style="display: flex; align-items: center; gap: 0.75rem;">
+          <div style="background-color: var(--primary-red-light); color: var(--primary-red); width: 2.75rem; height: 2.75rem; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(217, 20, 41, 0.15); flex-shrink: 0;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="8" y1="6" x2="21" y2="6"></line>
+              <line x1="8" y1="12" x2="21" y2="12"></line>
+              <line x1="8" y1="18" x2="21" y2="18"></line>
+              <line x1="3" y1="6" x2="3.01" y2="6"></line>
+              <line x1="3" y1="12" x2="3.01" y2="12"></line>
+              <line x1="3" y1="18" x2="3.01" y2="18"></line>
+            </svg>
+          </div>
+          <div>
+            <h1 style="margin: 0; line-height: 1.2;">Transacciones</h1>
+            <p style="margin: 0; font-size: 0.85rem; color: var(--text-secondary);">Listado completo y auditoría contable de movimientos</p>
+          </div>
         </div>
 
         <!-- Barra de filtros -->
