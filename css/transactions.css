@@ -67,8 +67,14 @@
 }
 
 .table-responsive {
-  overflow-x: auto;
+  overflow-x: hidden;
   width: 100%;
+}
+
+@media (max-width: 1024px) {
+  .table-responsive {
+    overflow-x: auto;
+  }
 }
 
 .tx-table {
@@ -217,6 +223,13 @@
   align-items: center;
   justify-content: center;
   transition: var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.action-btn svg {
+  width: 18px;
+  height: 18px;
+  display: block;
 }
 
 .action-btn:hover {
@@ -272,48 +285,92 @@
     padding: 1.25rem;
     border-bottom: 1px solid var(--border-color);
     position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
   }
   
   .tx-table tbody tr:hover {
-    background-color: var(--primary-red-light);
+    background-color: var(--bg-card);
   }
   
   .tx-table td {
-    padding: 0.25rem 0;
-    border: none;
+    padding: 0 !important;
+    border: none !important;
   }
   
   .tx-table td.cell-date {
     font-size: 0.8rem;
+    color: var(--text-muted);
     order: 1;
   }
   
   .tx-table td.cell-desc {
     font-size: 1.05rem;
     font-weight: 700;
-    margin-bottom: 0.5rem;
+    color: var(--text-main);
     order: 2;
+    white-space: normal;
+    max-width: none;
+    margin-bottom: 0.15rem;
   }
   
   .tx-table td.cell-category {
-    margin-bottom: 0.75rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--primary-red);
     order: 3;
+    margin-bottom: 0.4rem;
   }
   
-  .tx-table td.cell-amount {
-    text-align: left;
-    font-size: 1.1rem;
-    font-weight: 700;
-    margin-top: 0.25rem;
+  .tx-table td.cell-status {
+    order: 4;
+    text-align: left !important;
+    margin-bottom: 0.5rem;
+  }
+  
+  .tx-table td.cell-status .status-badge {
+    display: inline-block;
+  }
+
+  .tx-table td.cell-balance-before {
+    font-size: 1.05rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    order: 4;
+    order: 5;
+    text-align: left !important;
+    margin-top: 0.15rem;
   }
-  
-  /* Poner etiquetas descriptivas en móvil */
-  .tx-table td.cell-amount::before {
-    content: 'Monto:';
+
+  .tx-table td.cell-balance-before::before {
+    content: 'Antes:';
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+  }
+
+  .tx-table td.cell-amount-in,
+  .tx-table td.cell-amount-out {
+    font-size: 1.05rem;
+    font-weight: 700;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    order: 6;
+    text-align: left !important;
+    margin-top: 0.15rem;
+  }
+
+  .tx-table td.cell-amount-in::before {
+    content: 'Ingreso:';
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+  }
+
+  .tx-table td.cell-amount-out::before {
+    content: 'Egreso:';
     font-size: 0.85rem;
     font-weight: 600;
     color: var(--text-secondary);
@@ -321,18 +378,18 @@
   
   .tx-table td.cell-balance {
     text-align: left;
-    font-size: 0.95rem;
+    font-size: 1.05rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    order: 5;
+    order: 7;
     margin-bottom: 0.75rem;
-    border-bottom: 1px dashed var(--border-color);
-    padding-bottom: 0.5rem;
+    border-bottom: 1px dashed var(--border-color) !important;
+    padding-bottom: 0.75rem !important;
   }
   
   .tx-table td.cell-balance::before {
-    content: 'Saldo Resultante:';
+    content: 'Total:';
     font-size: 0.85rem;
     font-weight: 600;
     color: var(--text-secondary);
@@ -341,8 +398,9 @@
   .tx-table td.cell-actions {
     display: flex;
     justify-content: flex-end;
-    gap: 1rem;
-    order: 6;
-    padding-top: 0.25rem;
+    align-items: center;
+    gap: 0.75rem;
+    order: 8;
+    padding-top: 0.25rem !important;
   }
 }

@@ -72,7 +72,7 @@ body {
 
 .main-content {
   flex-grow: 1;
-  max-width: 1200px;
+  max-width: 1400px;
   width: 100%;
   margin: 0 auto;
   padding: 2rem 1.5rem;
@@ -90,7 +90,7 @@ body {
 }
 
 .navbar-container {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
   padding: 0 1.5rem;
   height: 4.5rem;
@@ -801,13 +801,17 @@ body {
 
 /* Filas inactivas (Soft Delete) */
 .tx-inactive {
-  opacity: 0.55;
   background-color: #f8f9fa !important;
-  transition: opacity var(--transition-normal);
+  transition: background-color var(--transition-normal);
 }
 
 .tx-inactive:hover {
   background-color: #f1f3f5 !important;
+}
+
+/* Aplicar opacidad reducida solo a los datos del registro, manteniendo las acciones al 100% */
+.tx-inactive td:not(.cell-actions) {
+  opacity: 0.55;
 }
 
 .tx-inactive .cell-amount-in,

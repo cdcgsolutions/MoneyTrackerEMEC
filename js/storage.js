@@ -332,7 +332,6 @@ export class StorageManager {
         }
       }
 
-      // Si la transacción está anulada, conserva el acumulado del runningBalance actual
       const expectedBalance = runningBalance;
       
       if (tx.saldoDespues !== expectedBalance) {

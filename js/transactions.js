@@ -80,14 +80,15 @@ export class TransactionsTable {
           <table class="tx-table">
             <thead>
               <tr>
-                <th style="width: 13%">Fecha</th>
-                <th style="width: 25%">Descripción</th>
-                <th style="width: 14%">Categoría</th>
-                <th style="width: 12%; text-align: center;">Estado</th>
-                <th style="text-align: right; width: 11%">Ingreso</th>
-                <th style="text-align: right; width: 11%">Egreso</th>
-                <th style="text-align: right; width: 12%">Saldo Total</th>
-                <th style="text-align: center; width: 12%">Acciones</th>
+                <th style="width: 9%">Fecha</th>
+                <th style="width: 19%">Descripción</th>
+                <th style="width: 10%">Categoría</th>
+                <th style="width: 8%; text-align: center;">Estado</th>
+                <th style="text-align: right; width: 11%">Antes</th>
+                <th style="text-align: right; width: 10%">Ingreso</th>
+                <th style="text-align: right; width: 10%">Egreso</th>
+                <th style="text-align: right; width: 10%">Total</th>
+                <th style="text-align: center; width: 13%">Acciones</th>
               </tr>
             </thead>
             <tbody id="tx-table-body">
@@ -167,6 +168,11 @@ export class TransactionsTable {
     const cleanCategorySlug = categoryName.toLowerCase();
     const cleanTxId = t.id;
     const isActive = t.activo !== false;
+    const amt = parseFloat(t.monto) || 0;
+    const saldoDespues = parseFloat(t.saldoDespues) || 0;
+    
+    const amtApplied = isActive ? amt : 0;
+    const saldoAntes = isIncome ? (saldoDespues - amtApplied) : (saldoDespues + amtApplied);
 
     // Badge de estado de la transacción
     const statusBadge = isActive
@@ -174,7 +180,7 @@ export class TransactionsTable {
       : `<span class="status-badge inactive-status" style="background-color: rgba(108, 117, 125, 0.08); color: #6c757d; border: 1px solid rgba(108, 117, 125, 0.15); padding: 0.25rem 0.5rem; border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 600;">Anulado</span>`;
 
     return `
-      <tr class="${t.tipo}-row ${isActive ? '' : 'tx-inactive'}" style="${isActive ? '' : 'opacity: 0.55; background-color: #f8f9fa;'}">
+      <tr class="${t.tipo}-row ${isActive ? '' : 'tx-inactive'}" style="${isActive ? '' : 'background-color: #f8f9fa;'}">
         <td class="tx-date cell-date">${t.fecha}</td>
         <td class="tx-desc cell-desc" title="ID: ${cleanTxId}" style="${isActive ? '' : 'text-decoration: line-through;'}">${this.escapeHtml(t.descripcion)}</td>
         <td class="cell-category" style="color: var(--text-secondary); font-weight: 500;">
@@ -183,14 +189,17 @@ export class TransactionsTable {
         <td class="cell-status" style="text-align: center;">
           ${statusBadge}
         </td>
+        <td class="tx-balance cell-balance-before" style="text-align: right; color: var(--text-secondary); font-variant-numeric: tabular-nums; ${isActive ? '' : 'text-decoration: line-through;'}">
+          ${this.formatMoney(saldoAntes)}
+        </td>
         <td class="tx-amount income cell-amount-in" style="text-align: right; ${isActive ? '' : 'text-decoration: line-through;'}">
           ${isIncome ? this.formatMoney(t.monto) : '—'}
         </td>
         <td class="tx-amount expense cell-amount-out" style="text-align: right; ${isActive ? '' : 'text-decoration: line-through;'}">
           ${!isIncome ? this.formatMoney(t.monto) : '—'}
         </td>
-        <td class="tx-balance cell-balance ${t.saldoDespues >= 0 ? 'positive' : 'negative'}" style="text-align: right; font-weight: 600;">
-          ${this.formatMoney(t.saldoDespues)}
+        <td class="tx-balance cell-balance ${t.saldoDespues >= 0 ? 'positive' : 'negative'}" style="text-align: right; font-weight: 600; ${isActive ? '' : 'text-decoration: line-through;'}">
+          ${isActive ? this.formatMoney(t.saldoDespues) : '—'}
         </td>
         <td class="cell-actions">
           <div class="actions-cell">

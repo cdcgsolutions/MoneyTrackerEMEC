@@ -2,7 +2,8 @@
  * dashboard.js
  * Controlador para la pestaña de Resumen General / Dashboard.
  * Calcula métricas financieras en tiempo real omitiendo transacciones inactivas (soft deleted)
- * y renderiza los últimos movimientos activos con categorías dinámicas.
+ * para mantener la integridad contable de balances, ingresos y egresos.
+ * Renderiza los últimos movimientos con desglose de flujo contable (saldo anterior, monto y resultante).
  */
 
 export class Dashboard {
@@ -25,7 +26,7 @@ export class Dashboard {
 
   /**
    * Procesa la lista de transacciones para obtener balances consolidados.
-   * Excluye las transacciones inactivas (soft delete) del cálculo.
+   * Excluye las transacciones inactivas (soft delete / anuladas) del cálculo contable.
    */
   calculateMetrics(transactions) {
     let totalIncome = 0;
@@ -59,10 +60,9 @@ export class Dashboard {
 
     const metrics = this.calculateMetrics(transactions);
     
-    // Obtener únicamente los últimos 5 movimientos ACTIVOS ordenados del más reciente al más antiguo
+    // Obtener los últimos 5 movimientos (activos o anulados para fines de auditoría visual)
     // Se ordena cronológicamente descendente y, si coinciden en fecha, por ID numérico descendente
-    const activeTransactions = transactions.filter(t => t.activo !== false);
-    const recentTransactions = [...activeTransactions]
+    const recentTransactions = [...transactions]
       .sort((a, b) => {
         const dateDiff = new Date(b.fecha) - new Date(a.fecha);
         if (dateDiff !== 0) return dateDiff;
@@ -134,7 +134,7 @@ export class Dashboard {
         <div class="recent-list" id="recent-transactions-list">
           ${recentTransactions.length === 0 ? this.renderEmptyState() : recentTransactions.map(t => this.renderTransactionItem(t, categoryMap)).join('')}
         </div>
-        ${activeTransactions.length > 5 ? `
+        ${transactions.length > 5 ? `
           <button id="dashboard-view-all-btn" class="view-all-link">
             Ver todo el historial
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
@@ -173,35 +173,59 @@ export class Dashboard {
 
   /**
    * Genera el marcado HTML para un movimiento reciente individual.
-   * Aplica color verde al icono de suma (ingreso) y color rojo al icono de resta (egreso).
+   * Muestra el desglose de flujo contable completo:
+   * Saldo Anterior, Monto Aplicado (+/-) y Saldo Resultante (acumulado).
    */
   renderTransactionItem(t, categoryMap) {
     const isIncome = t.tipo === 'ingreso';
+    const isActive = t.activo !== false;
     const categoryName = categoryMap[t.categoriaId] || 'Otros';
+    const amt = parseFloat(t.monto) || 0;
+    const saldoDespues = parseFloat(t.saldoDespues) || 0;
+    
+    // Si la transacción está dada de baja, su impacto contable real en el flujo fue de 0
+    const amtApplied = isActive ? amt : 0;
+    const saldoAntes = isIncome ? (saldoDespues - amtApplied) : (saldoDespues + amtApplied);
     
     // Icono correspondiente con color verde para suma y rojo para resta (solo la flechita/stroke)
     const iconSvg = isIncome 
       ? `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="var(--color-income)" stroke-width="2.75"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline></svg>`
       : `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="var(--color-expense)" stroke-width="2.75"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"></polyline></svg>`;
 
+    const flowMovText = isActive 
+      ? `${isIncome ? '+' : '-'}${this.formatMoney(amt)}` 
+      : `0,00 BOB (Anulado)`;
+
     return `
-      <div class="recent-item ${t.tipo}">
-        <div class="recent-item-left">
+      <div class="recent-item ${t.tipo} ${isActive ? '' : 'tx-inactive'}" style="${isActive ? '' : 'opacity: 0.55;'}">
+        <div class="recent-item-left" style="width: 100%;">
           <div class="recent-type-icon">
             ${iconSvg}
           </div>
-          <div class="recent-details">
-            <h4>${this.escapeHtml(t.descripcion)}</h4>
-            <div class="recent-meta">
+          <div class="recent-details" style="width: 100%;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; width: 100%; gap: 1rem;">
+              <h4 style="${isActive ? '' : 'text-decoration: line-through;'}">${this.escapeHtml(t.descripcion)}</h4>
+              <span class="recent-amount" style="${isActive ? '' : 'text-decoration: line-through;'} font-weight: 700; white-space: nowrap;">
+                ${isIncome ? '+' : '-'}&nbsp;${this.formatMoney(t.monto)}
+              </span>
+            </div>
+            <div class="recent-meta" style="margin-top: 0.15rem;">
               <span>${t.fecha}</span>
               <span class="recent-meta-separator"></span>
               <span style="font-weight: 500;">${categoryName}</span>
+              ${isActive ? '' : '<span style="color: var(--text-muted); font-size: 0.75rem; font-weight: 700; text-transform: uppercase; margin-left: 0.5rem;">[Anulado]</span>'}
+            </div>
+            
+            <!-- Desglose elegante del flujo de caja (Antes, Movimiento, Después) -->
+            <div class="recent-flow-details" style="margin-top: 0.65rem; padding-top: 0.5rem; border-top: 1px dashed var(--border-color); display: flex; gap: 0.6rem; font-size: 0.8rem; color: var(--text-secondary); flex-wrap: wrap; align-items: center;">
+              <span>Antes: <strong style="color: var(--text-main); font-variant-numeric: tabular-nums;">${this.formatMoney(saldoAntes)}</strong></span>
+              <span style="color: var(--text-muted); font-weight: 600;">→</span>
+              <span>Mov: <strong style="color: ${isActive ? (isIncome ? 'var(--color-income)' : 'var(--color-expense)') : 'var(--text-muted)'}; font-variant-numeric: tabular-nums;">${flowMovText}</strong></span>
+              <span style="color: var(--text-muted); font-weight: 600;">→</span>
+              <span>Total: <strong style="color: var(--text-main); font-variant-numeric: tabular-nums;">${isActive ? this.formatMoney(saldoDespues) : '—'}</strong></span>
             </div>
           </div>
         </div>
-        <span class="recent-amount">
-          ${isIncome ? '+' : '-'}&nbsp;${this.formatMoney(t.monto)}
-        </span>
       </div>
     `;
   }
