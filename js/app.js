@@ -421,7 +421,7 @@ class App {
 
     const submitBtn = document.getElementById('modal-submit');
     const originalText = submitBtn.textContent;
-    submitBtn.textContent = 'Guardando en Firestore...';
+    submitBtn.textContent = 'Guardando...';
     submitBtn.disabled = true;
 
     const actionMessage = this.editingTxId ? 'Guardando modificaciones...' : 'Agregando nuevo registro...';
@@ -469,7 +469,7 @@ class App {
       <tr>
         <td colspan="4" style="text-align: center; padding: 2.5rem; color: var(--text-secondary);">
           <span class="btn-spinner" style="border-top-color: var(--primary-red); display: inline-block; float: none; margin: 0 auto 0.75rem auto;"></span><br>
-          Cargando historial de cambios de Firestore...
+          Cargando historial de cambios...
         </td>
       </tr>
     `;
@@ -520,7 +520,7 @@ class App {
       this.auditTableBody.innerHTML = `
         <tr>
           <td colspan="4" style="text-align: center; padding: 2.5rem; color: var(--primary-red); font-weight: 500;">
-            Ocurrió un error al obtener la bitácora desde Firestore.
+            Ocurrió un error al obtener la bitácora.
           </td>
         </tr>
       `;
@@ -555,15 +555,15 @@ class App {
     const errorDetailHtml = `
       <div class="diagnostic-card error-generic animate-slide-up">
         <div class="diagnostic-icon">❌</div>
-        <h3>Error de Base de Datos de Firestore</h3>
-        <p>Ocurrió un error al intentar conectarse o inicializar la base de datos de Firestore.</p>
+        <h3>Error de Conexión</h3>
+        <p>Ocurrió un error al intentar conectarse o inicializar la base de datos.</p>
         <p class="error-msg"><code>${error.message || error.toString()}</code></p>
 
         <div class="diagnostic-steps">
           <h4>Recomendaciones de Diagnóstico:</h4>
           <ul>
-            <li>Asegúrate de que tus <strong>Reglas de Seguridad de Cloud Firestore</strong> permitan lectura y escritura para usuarios autenticados.</li>
-            <li>Revisa que tengas una conexión activa a internet.</li>
+            <li>Asegúrate de que tus <strong>permisos y accesos contables</strong> estén configurados de forma correcta.</li>
+            <li>Revisa que tengas una conexión activa a internet e inténtalo de nuevo.</li>
           </ul>
         </div>
 

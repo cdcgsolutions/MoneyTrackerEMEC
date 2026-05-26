@@ -424,14 +424,29 @@ body {
 
   .navbar-container {
     height: 4rem;
+    padding: 0 0.75rem;
+  }
+
+  .navbar-brand {
+    gap: 0.5rem;
+  }
+
+  .brand-icon {
+    width: 2.1rem;
+    height: 2.1rem;
+  }
+
+  .brand-icon svg {
+    width: 1.1rem;
+    height: 1.1rem;
   }
 
   .brand-title {
-    font-size: 1.15rem;
+    font-size: 0.95rem;
   }
 
   .nav-btn {
-    padding: 0.5rem 0.8rem;
+    padding: 0.5rem 0.75rem;
     font-size: 0.85rem;
   }
 
@@ -441,6 +456,12 @@ body {
 
   .main-content {
     padding: 1.25rem 1rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .brand-title {
+    font-size: 0.8rem;
   }
 }
 
