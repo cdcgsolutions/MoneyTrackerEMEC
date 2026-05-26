@@ -30,14 +30,8 @@
 <div id="login-screen" class="login-overlay animate-fade-in" style="display: none;">
   <div class="login-card">
     <div class="login-logo-container">
-      <div class="brand-icon">
-        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none"
-          stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="2" y="4" width="20" height="16" rx="2" ry="2"></rect>
-          <line x1="12" y1="1" x2="12" y2="4"></line>
-          <line x1="12" y1="20" x2="12" y2="23"></line>
-          <line x1="2" y1="10" x2="22" y2="10"></line>
-        </svg>
+      <div class="brand-icon" style="background: transparent; box-shadow: none;">
+        <img src="Logo.png" alt="Logo" style="width: 100%; height: 100%; object-fit: contain;">
       </div>
       <h2>MoneyTrackerEMEC</h2>
       <p>Controla tus ingresos, egresos y balance neto en la nube</p>
@@ -91,25 +85,18 @@
     <div class="navbar-container">
 
       <div class="navbar-brand" id="brand-logo" style="cursor: default;">
-        <div class="brand-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="2" y="4" width="20" height="16" rx="2" ry="2"></rect>
-            <line x1="12" y1="1" x2="12" y2="4"></line>
-            <line x1="12" y1="20" x2="12" y2="23"></line>
-            <line x1="2" y1="10" x2="22" y2="10"></line>
-          </svg>
+        <div class="brand-icon" style="background: transparent; box-shadow: none;">
+          <img src="Logo.png" alt="Logo" style="width: 100%; height: 100%; object-fit: contain;">
         </div>
         <span class="brand-title">MoneyTrackerEMEC</span>
       </div>
 
       <div class="navbar-nav">
         <button class="nav-btn active" data-tab="dashboard" id="nav-dashboard">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-            <rect x="3" y="3" width="7" height="9" rx="1"></rect>
-            <rect x="14" y="3" width="7" height="5" rx="1"></rect>
-            <rect x="14" y="12" width="7" height="9" rx="1"></rect>
-            <rect x="3" y="16" width="7" height="5" rx="1"></rect>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 14.71V12a2 2 0 1 0-4 0v.18"></path>
+            <path d="M2.3 18a10 10 0 1 1 19.4 0"></path>
+            <path d="m13.5 9.5-2.5 2.5"></path>
           </svg>
           <span>Dashboard</span>
         </button>
@@ -289,12 +276,12 @@
       </button>
     </div>
     <div class="modal-body" style="padding: 1.5rem;">
-      <div id="qr-download-container" style="background: #ffffff; padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 1.5rem;">
+      <div id="qr-download-container" style="background: #ffffff; padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 1.5rem; text-align: center;">
         <div style="margin-bottom: 1rem;">
           <h4 style="color: var(--primary-red); margin: 0; font-size: 1.25rem;">MoneyTrackerEMEC</h4>
           <p style="color: var(--text-secondary); margin: 0; font-size: 0.85rem;">Sistema de Control Financiero</p>
         </div>
-        <img id="qr-image-element" src="QR.jpeg" alt="QR Code" style="max-width: 100%; height: auto; border-radius: 8px; margin-bottom: 1rem;">
+        <img id="qr-image-element" src="QR.jpeg" alt="QR Code" style="max-width: 250px; width: 100%; height: auto; border-radius: 8px; margin-bottom: 1rem; display: block; margin-left: auto; margin-right: auto;">
         <div style="border-top: 1px dashed var(--border-color); padding-top: 1rem;">
           <p style="font-weight: 600; color: var(--text-main); margin: 0; font-size: 0.95rem;">A nombre de: "Mi Esposito"</p>
           <p style="color: var(--text-muted); margin: 0; font-size: 0.8rem; margin-top: 0.25rem;">Válido hasta: 25 de mayo del 2028</p>
