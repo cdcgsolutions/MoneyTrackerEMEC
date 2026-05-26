@@ -8,6 +8,9 @@ export class TransactionsTable {
     this.currentFilter = 'todas';
     this.currentPage = 1;
     this.pageSize = 10;
+    const now = new Date();
+    this.selectedMonth = now.getMonth().toString();
+    this.selectedYear = now.getFullYear().toString();
   }
 
   formatMoney(amount) {
@@ -22,9 +25,17 @@ export class TransactionsTable {
     let filtered = transactions;
 
     if (this.currentFilter === 'ingresos') {
-      filtered = transactions.filter(t => t.tipo === 'ingreso');
+      filtered = filtered.filter(t => t.tipo === 'ingreso');
     } else if (this.currentFilter === 'egresos') {
-      filtered = transactions.filter(t => t.tipo === 'egreso');
+      filtered = filtered.filter(t => t.tipo === 'egreso');
+    }
+
+    if (this.selectedMonth !== 'all' && this.selectedYear !== 'all') {
+      filtered = filtered.filter(t => {
+        if (!t.fecha) return false;
+        const [yyyy, mm] = t.fecha.split('-');
+        return (parseInt(mm, 10) - 1).toString() === this.selectedMonth && yyyy === this.selectedYear;
+      });
     }
 
     return [...filtered].reverse();
@@ -46,7 +57,7 @@ export class TransactionsTable {
     const paginatedData = processedData.slice(startIndex, endIndex);
 
     this.container.innerHTML = `
-      <div class="transactions-header animate-fade-in" style="align-items: center;">
+      <div class="transactions-header animate-fade-in" style="align-items: center; flex-wrap: wrap; gap: 1rem;">
         <div class="transactions-title-group" style="display: flex; align-items: center; gap: 0.75rem;">
           <div style="background-color: var(--primary-red-light); color: var(--primary-red); width: 2.75rem; height: 2.75rem; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(217, 20, 41, 0.15); flex-shrink: 0;">
             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -60,21 +71,41 @@ export class TransactionsTable {
           </div>
           <div>
             <h1 style="margin: 0; line-height: 1.2;">Transacciones</h1>
-            <p style="margin: 0; font-size: 0.85rem; color: var(--text-secondary);">Listado completo y auditoría contable de movimientos</p>
           </div>
         </div>
 
-        <!-- Barra de filtros -->
-        <div class="filter-bar">
-          <button class="filter-btn ${this.currentFilter === 'todas' ? 'active' : ''}" data-filter="todas">Todas</button>
-          <button class="filter-btn ${this.currentFilter === 'ingresos' ? 'active' : ''}" data-filter="ingresos">Ingresos</button>
-          <button class="filter-btn ${this.currentFilter === 'egresos' ? 'active' : ''}" data-filter="egresos">Egresos</button>
-        </div>
+        <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; margin-left: auto;">
+          <!-- Barra de filtros -->
+          <div class="filter-bar" style="margin: 0;">
+            <button class="filter-btn ${this.currentFilter === 'todas' ? 'active' : ''}" data-filter="todas" style="padding: 0.25rem 0.5rem; font-size: 0.85rem;">Todas</button>
+            <button class="filter-btn ${this.currentFilter === 'ingresos' ? 'active' : ''}" data-filter="ingresos" style="padding: 0.25rem 0.5rem; font-size: 0.85rem;">Ingresos</button>
+            <button class="filter-btn ${this.currentFilter === 'egresos' ? 'active' : ''}" data-filter="egresos" style="padding: 0.25rem 0.5rem; font-size: 0.85rem;">Egresos</button>
+          </div>
 
-        <div class="transactions-actions">
-          <button id="transactions-add-btn" class="btn btn-primary" style="display: flex; align-items: center;">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.5rem;"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-            Agregar Registro
+          <select id="tx-month" class="form-control" style="width: auto; padding: 0.35rem 0.75rem; font-size: 0.85rem; height: auto;">
+            <option value="all" ${this.selectedMonth === 'all' ? 'selected' : ''}>Todos</option>
+            <option value="0" ${this.selectedMonth === '0' ? 'selected' : ''}>Ene</option>
+            <option value="1" ${this.selectedMonth === '1' ? 'selected' : ''}>Feb</option>
+            <option value="2" ${this.selectedMonth === '2' ? 'selected' : ''}>Mar</option>
+            <option value="3" ${this.selectedMonth === '3' ? 'selected' : ''}>Abr</option>
+            <option value="4" ${this.selectedMonth === '4' ? 'selected' : ''}>May</option>
+            <option value="5" ${this.selectedMonth === '5' ? 'selected' : ''}>Jun</option>
+            <option value="6" ${this.selectedMonth === '6' ? 'selected' : ''}>Jul</option>
+            <option value="7" ${this.selectedMonth === '7' ? 'selected' : ''}>Ago</option>
+            <option value="8" ${this.selectedMonth === '8' ? 'selected' : ''}>Sep</option>
+            <option value="9" ${this.selectedMonth === '9' ? 'selected' : ''}>Oct</option>
+            <option value="10" ${this.selectedMonth === '10' ? 'selected' : ''}>Nov</option>
+            <option value="11" ${this.selectedMonth === '11' ? 'selected' : ''}>Dic</option>
+          </select>
+          
+          <select id="tx-year" class="form-control" style="width: auto; padding: 0.35rem 0.75rem; font-size: 0.85rem; height: auto;">
+            <option value="all" ${this.selectedYear === 'all' ? 'selected' : ''}>Todos</option>
+            ${this.getYearOptions(transactions)}
+          </select>
+
+          <button id="transactions-add-btn" class="btn btn-primary" style="padding: 0.35rem 0.75rem; font-size: 0.85rem; height: auto;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.25rem;"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            Nuevo
           </button>
         </div>
       </div>
@@ -172,6 +203,25 @@ export class TransactionsTable {
     document.getElementById('transactions-add-btn').addEventListener('click', () => {
       if (this.onOpenModal) this.onOpenModal();
     });
+
+    const monthSelect = document.getElementById('tx-month');
+    const yearSelect = document.getElementById('tx-year');
+
+    if (monthSelect) {
+      monthSelect.addEventListener('change', (e) => {
+        this.selectedMonth = e.target.value;
+        this.currentPage = 1;
+        this.render(transactions, categoryMap);
+      });
+    }
+
+    if (yearSelect) {
+      yearSelect.addEventListener('change', (e) => {
+        this.selectedYear = e.target.value;
+        this.currentPage = 1;
+        this.render(transactions, categoryMap);
+      });
+    }
 
     const tableBody = document.getElementById('tx-table-body');
 
@@ -271,5 +321,21 @@ export class TransactionsTable {
     const div = document.createElement('div');
     div.innerText = str;
     return div.innerHTML;
+  }
+
+  getYearOptions(transactions) {
+    const years = new Set();
+    const currentYear = new Date().getFullYear().toString();
+    years.add(currentYear);
+    
+    transactions.forEach(t => {
+      if (t.fecha) {
+        const [yyyy] = t.fecha.split('-');
+        if (yyyy) years.add(yyyy);
+      }
+    });
+
+    const sortedYears = Array.from(years).sort((a, b) => b - a);
+    return sortedYears.map(year => `<option value="${year}" ${this.selectedYear === year ? 'selected' : ''}>${year}</option>`).join('');
   }
 }

@@ -457,6 +457,16 @@ body {
   .main-content {
     padding: 1.25rem 1rem;
   }
+
+  #dash-month, #dash-year, #tx-month, #tx-year {
+    flex: 1 1 100%;
+    width: 100% !important;
+    margin-bottom: 0.25rem;
+  }
+  
+  .hide-mobile {
+    display: none;
+  }
 }
 
 @media (max-width: 400px) {

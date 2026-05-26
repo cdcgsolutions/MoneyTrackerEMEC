@@ -5,6 +5,9 @@ export class Dashboard {
     this.onOpenModal = onOpenModal;
     this.currentPage = 1;
     this.pageSize = 10;
+    const now = new Date();
+    this.selectedMonth = now.getMonth().toString();
+    this.selectedYear = now.getFullYear().toString();
   }
 
   formatMoney(amount) {
@@ -40,9 +43,18 @@ export class Dashboard {
   render(transactions, categoryMap = {}) {
     if (!this.container) return;
 
-    const metrics = this.calculateMetrics(transactions);
+    let filteredTransactions = transactions;
+    if (this.selectedMonth !== 'all' && this.selectedYear !== 'all') {
+      filteredTransactions = transactions.filter(t => {
+        if (!t.fecha) return false;
+        const [yyyy, mm] = t.fecha.split('-');
+        return (parseInt(mm, 10) - 1).toString() === this.selectedMonth && yyyy === this.selectedYear;
+      });
+    }
 
-    const sortedTransactions = [...transactions]
+    const metrics = this.calculateMetrics(filteredTransactions);
+
+    const sortedTransactions = [...filteredTransactions]
       .sort((a, b) => {
         const dateDiff = new Date(b.fecha) - new Date(a.fecha);
         if (dateDiff !== 0) return dateDiff;
@@ -62,7 +74,7 @@ export class Dashboard {
     const isBalancePositive = metrics.balance >= 0;
 
     this.container.innerHTML = `
-      <div class="dashboard-header animate-fade-in" style="align-items: center;">
+      <div class="dashboard-header animate-fade-in" style="align-items: center; flex-wrap: wrap; gap: 1rem;">
         <div class="dashboard-title-group" style="display: flex; align-items: center; gap: 0.75rem;">
           <div style="background-color: var(--primary-red-light); color: var(--primary-red); width: 2.75rem; height: 2.75rem; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(217, 20, 41, 0.15); flex-shrink: 0;">
             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -74,13 +86,36 @@ export class Dashboard {
           </div>
           <div>
             <h1 style="margin: 0; line-height: 1.2;">Dashboard</h1>
-            <p style="margin: 0; font-size: 0.85rem; color: var(--text-secondary);">Supervisa el estado y flujo de tus finanzas personales</p>
           </div>
         </div>
-        <button id="dashboard-new-tx-btn" class="btn btn-primary">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-          Nuevo Registro
-        </button>
+        
+        <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; margin-left: auto;">
+          <select id="dash-month" class="form-control" style="width: auto; padding: 0.35rem 0.75rem; font-size: 0.85rem; height: auto;">
+            <option value="all" ${this.selectedMonth === 'all' ? 'selected' : ''}>Todos los meses</option>
+            <option value="0" ${this.selectedMonth === '0' ? 'selected' : ''}>Enero</option>
+            <option value="1" ${this.selectedMonth === '1' ? 'selected' : ''}>Febrero</option>
+            <option value="2" ${this.selectedMonth === '2' ? 'selected' : ''}>Marzo</option>
+            <option value="3" ${this.selectedMonth === '3' ? 'selected' : ''}>Abril</option>
+            <option value="4" ${this.selectedMonth === '4' ? 'selected' : ''}>Mayo</option>
+            <option value="5" ${this.selectedMonth === '5' ? 'selected' : ''}>Junio</option>
+            <option value="6" ${this.selectedMonth === '6' ? 'selected' : ''}>Julio</option>
+            <option value="7" ${this.selectedMonth === '7' ? 'selected' : ''}>Agosto</option>
+            <option value="8" ${this.selectedMonth === '8' ? 'selected' : ''}>Septiembre</option>
+            <option value="9" ${this.selectedMonth === '9' ? 'selected' : ''}>Octubre</option>
+            <option value="10" ${this.selectedMonth === '10' ? 'selected' : ''}>Noviembre</option>
+            <option value="11" ${this.selectedMonth === '11' ? 'selected' : ''}>Diciembre</option>
+          </select>
+          
+          <select id="dash-year" class="form-control" style="width: auto; padding: 0.35rem 0.75rem; font-size: 0.85rem; height: auto;">
+            <option value="all" ${this.selectedYear === 'all' ? 'selected' : ''}>Todos los años</option>
+            ${this.getYearOptions(transactions)}
+          </select>
+
+          <button id="dashboard-new-tx-btn" class="btn btn-primary" style="padding: 0.35rem 0.75rem; font-size: 0.85rem; height: auto;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.25rem;"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            Nuevo
+          </button>
+        </div>
       </div>
 
       <!-- KPI Grid -->
@@ -168,6 +203,25 @@ export class Dashboard {
     document.getElementById('dashboard-new-tx-btn').addEventListener('click', () => {
       if (this.onOpenModal) this.onOpenModal();
     });
+
+    const monthSelect = document.getElementById('dash-month');
+    const yearSelect = document.getElementById('dash-year');
+
+    if (monthSelect) {
+      monthSelect.addEventListener('change', (e) => {
+        this.selectedMonth = e.target.value;
+        this.currentPage = 1;
+        this.render(transactions, categoryMap);
+      });
+    }
+
+    if (yearSelect) {
+      yearSelect.addEventListener('change', (e) => {
+        this.selectedYear = e.target.value;
+        this.currentPage = 1;
+        this.render(transactions, categoryMap);
+      });
+    }
 
     const viewAllBtn = document.getElementById('dashboard-view-all-btn');
     if (viewAllBtn) {
@@ -279,5 +333,21 @@ export class Dashboard {
     const div = document.createElement('div');
     div.innerText = str;
     return div.innerHTML;
+  }
+
+  getYearOptions(transactions) {
+    const years = new Set();
+    const currentYear = new Date().getFullYear().toString();
+    years.add(currentYear);
+    
+    transactions.forEach(t => {
+      if (t.fecha) {
+        const [yyyy] = t.fecha.split('-');
+        if (yyyy) years.add(yyyy);
+      }
+    });
+
+    const sortedYears = Array.from(years).sort((a, b) => b - a);
+    return sortedYears.map(year => `<option value="${year}" ${this.selectedYear === year ? 'selected' : ''}>${year}</option>`).join('');
   }
 }

@@ -44,6 +44,9 @@ class App {
     this.auditModalTitle = document.getElementById('audit-modal-title');
     this.auditTableBody = document.getElementById('audit-table-body');
 
+    this.qrModalOverlay = document.getElementById('qr-modal');
+    this.qrBtn = document.getElementById('nav-qr-btn');
+
     this.init();
   }
 
@@ -96,6 +99,37 @@ class App {
           this.closeAuditModal();
         }
       });
+    }
+
+    const closeQrModalBtn = document.getElementById('qr-modal-close');
+
+    if (this.qrBtn) {
+      this.qrBtn.addEventListener('click', () => {
+        if (this.qrModalOverlay) {
+          this.qrModalOverlay.style.display = 'flex';
+          setTimeout(() => {
+            this.qrModalOverlay.classList.add('active');
+          }, 10);
+          document.body.style.overflow = 'hidden';
+        }
+      });
+    }
+
+    if (closeQrModalBtn) {
+      closeQrModalBtn.addEventListener('click', () => this.closeQrModal());
+    }
+
+    if (this.qrModalOverlay) {
+      this.qrModalOverlay.addEventListener('click', (e) => {
+        if (e.target === this.qrModalOverlay) {
+          this.closeQrModal();
+        }
+      });
+    }
+
+    const downloadQrBtn = document.getElementById('qr-download-btn');
+    if (downloadQrBtn) {
+      downloadQrBtn.addEventListener('click', () => this.downloadQrTicket());
     }
 
     this.loginForm.addEventListener('submit', (e) => this.handleLogin(e));
@@ -533,6 +567,73 @@ class App {
       this.auditModalOverlay.style.display = 'none';
     }, 200);
     document.body.style.overflow = '';
+  }
+
+  closeQrModal() {
+    if (this.qrModalOverlay) {
+      this.qrModalOverlay.classList.remove('active');
+      setTimeout(() => {
+        this.qrModalOverlay.style.display = 'none';
+      }, 200);
+      document.body.style.overflow = '';
+    }
+  }
+
+  downloadQrTicket() {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    
+    canvas.width = 400;
+    canvas.height = 560;
+    
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    ctx.strokeStyle = '#e2e8f0';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(10, 10, canvas.width - 20, canvas.height - 20);
+    
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#d91429';
+    ctx.font = 'bold 28px Outfit, Arial, sans-serif';
+    ctx.fillText('MoneyTrackerEMEC', canvas.width / 2, 60);
+    
+    ctx.fillStyle = '#64748b';
+    ctx.font = '16px Outfit, Arial, sans-serif';
+    ctx.fillText('Sistema de Control Financiero', canvas.width / 2, 85);
+    
+    const img = document.getElementById('qr-image-element');
+    if (img && img.complete) {
+      const imgSize = 280;
+      const imgX = (canvas.width - imgSize) / 2;
+      const imgY = 120;
+      ctx.drawImage(img, imgX, imgY, imgSize, imgSize);
+      
+      const footerY = imgY + imgSize + 50;
+      
+      ctx.beginPath();
+      ctx.setLineDash([5, 5]);
+      ctx.moveTo(40, footerY - 25);
+      ctx.lineTo(canvas.width - 40, footerY - 25);
+      ctx.strokeStyle = '#e2e8f0';
+      ctx.stroke();
+      ctx.setLineDash([]);
+      
+      ctx.fillStyle = '#0f172a';
+      ctx.font = 'bold 18px Outfit, Arial, sans-serif';
+      ctx.fillText('A nombre de: "Mi Esposito"', canvas.width / 2, footerY);
+      
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '14px Outfit, Arial, sans-serif';
+      ctx.fillText('Válido hasta: 25 de mayo del 2028', canvas.width / 2, footerY + 25);
+      
+      const link = document.createElement('a');
+      link.download = 'QR_MiEsposito.jpeg';
+      link.href = canvas.toDataURL('image/jpeg', 0.95);
+      link.click();
+    } else {
+      alert('La imagen del QR aún no ha cargado completamente. Intenta de nuevo en un segundo.');
+    }
   }
 
   escapeHtml(str) {
