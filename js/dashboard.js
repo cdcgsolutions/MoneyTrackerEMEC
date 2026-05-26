@@ -3,7 +3,7 @@
  * Controlador para la pestaña de Resumen General / Dashboard.
  * Calcula métricas financieras en tiempo real omitiendo transacciones inactivas (soft deleted)
  * para mantener la integridad contable de balances, ingresos y egresos.
- * Renderiza los últimos movimientos con desglose de flujo contable (saldo anterior, monto y resultante).
+ * Renderiza los últimos movimientos con desglose de flujo contable y soporte de paginación (de 10 en 10).
  */
 
 export class Dashboard {
@@ -11,16 +11,18 @@ export class Dashboard {
     this.container = document.getElementById(containerId);
     this.onNavigateToTransactions = onNavigateToTransactions;
     this.onOpenModal = onOpenModal;
+    this.currentPage = 1;
+    this.pageSize = 10;
   }
 
   /**
    * Formatea un número decimal como moneda BOB (Boliviano)
    */
   formatMoney(amount) {
-    return new Intl.NumberFormat('es-BO', { 
-      style: 'currency', 
+    return new Intl.NumberFormat('es-BO', {
+      style: 'currency',
       currency: 'BOB',
-      minimumFractionDigits: 2 
+      minimumFractionDigits: 2
     }).format(amount);
   }
 
@@ -31,7 +33,7 @@ export class Dashboard {
   calculateMetrics(transactions) {
     let totalIncome = 0;
     let totalExpense = 0;
- 
+
     transactions.forEach(t => {
       if (t.activo !== false) {
         const amt = parseFloat(t.monto) || 0;
@@ -51,7 +53,7 @@ export class Dashboard {
   }
 
   /**
-   * Dibuja toda la vista del Dashboard.
+   * Dibuja toda la vista del Dashboard con paginación integrada para los movimientos.
    * @param {Array} transactions - Arreglo global de transacciones
    * @param {Object} categoryMap - Mapeo id -> nombre de categorías dinámicas
    */
@@ -59,16 +61,25 @@ export class Dashboard {
     if (!this.container) return;
 
     const metrics = this.calculateMetrics(transactions);
-    
-    // Obtener los últimos 5 movimientos (activos o anulados para fines de auditoría visual)
-    // Se ordena cronológicamente descendente y, si coinciden en fecha, por ID numérico descendente
-    const recentTransactions = [...transactions]
+
+    // Obtener los movimientos ordenados cronológicamente descendente y por ID descendente
+    const sortedTransactions = [...transactions]
       .sort((a, b) => {
         const dateDiff = new Date(b.fecha) - new Date(a.fecha);
         if (dateDiff !== 0) return dateDiff;
         return Number(b.id) - Number(a.id);
-      })
-      .slice(0, 5);
+      });
+
+    // Paginación del Dashboard (de 10 en 10 registros)
+    const totalItems = sortedTransactions.length;
+    const totalPages = Math.ceil(totalItems / this.pageSize) || 1;
+    if (this.currentPage > totalPages) {
+      this.currentPage = 1;
+    }
+
+    const startIndex = (this.currentPage - 1) * this.pageSize;
+    const endIndex = Math.min(startIndex + this.pageSize, totalItems);
+    const paginatedRecent = sortedTransactions.slice(startIndex, endIndex);
 
     const isBalancePositive = metrics.balance >= 0;
 
@@ -128,17 +139,40 @@ export class Dashboard {
 
       <!-- Últimos Movimientos -->
       <div class="recent-section animate-slide-up">
-        <div class="recent-header">
-          <h3 class="recent-title">Últimos Movimientos</h3>
-        </div>
-        <div class="recent-list" id="recent-transactions-list">
-          ${recentTransactions.length === 0 ? this.renderEmptyState() : recentTransactions.map(t => this.renderTransactionItem(t, categoryMap)).join('')}
-        </div>
-        ${transactions.length > 5 ? `
-          <button id="dashboard-view-all-btn" class="view-all-link">
-            Ver todo el historial
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+        <div class="recent-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+          <h3 class="recent-title" style="margin: 0;">Últimos Movimientos</h3>
+          <button id="dashboard-view-all-btn" class="view-all-link" style="margin: 0; background: none; border: none; font-size: 0.85rem; font-weight: 600; color: var(--primary-red); display: flex; align-items: center; gap: 0.25rem; cursor: pointer;">
+            Historial completo
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width: 14px; height: 14px;"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
           </button>
+        </div>
+        
+        <div class="recent-list" id="recent-transactions-list" style="display: flex; flex-direction: column; gap: 0.75rem;">
+          ${paginatedRecent.length === 0 ? this.renderEmptyState() : paginatedRecent.map(t => this.renderTransactionItem(t, categoryMap)).join('')}
+        </div>
+        
+        <!-- Paginación estilo MudBlazor para Movimientos -->
+        ${totalItems > 0 ? `
+          <div class="pagination-container dashboard-pagination">
+            <div class="pagination-left">
+              <span class="pagination-info">${totalItems > 0 ? `${startIndex + 1}-${endIndex} de ${totalItems}` : '0-0 de 0'}</span>
+            </div>
+            <div class="pagination-right">
+              <button class="pagination-btn btn-dash-first" ${this.currentPage === 1 ? 'disabled' : ''} title="Primera página">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="11 17 6 12 11 7"></polyline><polyline points="18 17 13 12 18 7"></polyline></svg>
+              </button>
+              <button class="pagination-btn btn-dash-prev" ${this.currentPage === 1 ? 'disabled' : ''} title="Página anterior">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+              </button>
+              <span class="pagination-page-indicator">Pág. ${this.currentPage} de ${totalPages}</span>
+              <button class="pagination-btn btn-dash-next" ${this.currentPage === totalPages ? 'disabled' : ''} title="Página siguiente">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+              </button>
+              <button class="pagination-btn btn-dash-last" ${this.currentPage === totalPages ? 'disabled' : ''} title="Última página">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="13 17 18 12 13 7"></polyline><polyline points="6 17 11 12 6 7"></polyline></svg>
+              </button>
+            </div>
+          </div>
         ` : ''}
       </div>
     `;
@@ -152,6 +186,41 @@ export class Dashboard {
     if (viewAllBtn) {
       viewAllBtn.addEventListener('click', () => {
         if (this.onNavigateToTransactions) this.onNavigateToTransactions();
+      });
+    }
+
+    // Listeners de paginación del Dashboard
+    const btnDashFirst = this.container.querySelector('.btn-dash-first');
+    const btnDashPrev = this.container.querySelector('.btn-dash-prev');
+    const btnDashNext = this.container.querySelector('.btn-dash-next');
+    const btnDashLast = this.container.querySelector('.btn-dash-last');
+
+    if (btnDashFirst) {
+      btnDashFirst.addEventListener('click', () => {
+        this.currentPage = 1;
+        this.render(transactions, categoryMap);
+      });
+    }
+    if (btnDashPrev) {
+      btnDashPrev.addEventListener('click', () => {
+        if (this.currentPage > 1) {
+          this.currentPage--;
+          this.render(transactions, categoryMap);
+        }
+      });
+    }
+    if (btnDashNext) {
+      btnDashNext.addEventListener('click', () => {
+        if (this.currentPage < totalPages) {
+          this.currentPage++;
+          this.render(transactions, categoryMap);
+        }
+      });
+    }
+    if (btnDashLast) {
+      btnDashLast.addEventListener('click', () => {
+        this.currentPage = totalPages;
+        this.render(transactions, categoryMap);
       });
     }
   }
@@ -182,18 +251,18 @@ export class Dashboard {
     const categoryName = categoryMap[t.categoriaId] || 'Otros';
     const amt = parseFloat(t.monto) || 0;
     const saldoDespues = parseFloat(t.saldoDespues) || 0;
-    
+
     // Si la transacción está dada de baja, su impacto contable real en el flujo fue de 0
     const amtApplied = isActive ? amt : 0;
     const saldoAntes = isIncome ? (saldoDespues - amtApplied) : (saldoDespues + amtApplied);
-    
+
     // Icono correspondiente con color verde para suma y rojo para resta (solo la flechita/stroke)
-    const iconSvg = isIncome 
+    const iconSvg = isIncome
       ? `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="var(--color-income)" stroke-width="2.75"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline></svg>`
       : `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="var(--color-expense)" stroke-width="2.75"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"></polyline></svg>`;
 
-    const flowMovText = isActive 
-      ? `${isIncome ? '+' : '-'}${this.formatMoney(amt)}` 
+    const flowMovText = isActive
+      ? `${isIncome ? '+' : '-'}${this.formatMoney(amt)}`
       : `0,00 BOB (Anulado)`;
 
     return `

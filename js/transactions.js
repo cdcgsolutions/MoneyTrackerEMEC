@@ -13,6 +13,8 @@ export class TransactionsTable {
     this.onOpenModal = onOpenModal;
     this.onOpenAuditLog = onOpenAuditLog;
     this.currentFilter = 'todas'; // 'todas', 'ingresos', 'egresos'
+    this.currentPage = 1;
+    this.pageSize = 10;
   }
 
   /**
@@ -52,6 +54,17 @@ export class TransactionsTable {
     if (!this.container) return;
 
     const processedData = this.processTransactions(transactions);
+    
+    // Paginación lógica
+    const totalItems = processedData.length;
+    const totalPages = Math.ceil(totalItems / this.pageSize) || 1;
+    if (this.currentPage > totalPages) {
+      this.currentPage = 1;
+    }
+    
+    const startIndex = (this.currentPage - 1) * this.pageSize;
+    const endIndex = Math.min(startIndex + this.pageSize, totalItems);
+    const paginatedData = processedData.slice(startIndex, endIndex);
 
     this.container.innerHTML = `
       <div class="transactions-header animate-fade-in">
@@ -92,9 +105,31 @@ export class TransactionsTable {
               </tr>
             </thead>
             <tbody id="tx-table-body">
-              ${processedData.length === 0 ? this.renderEmptyRow() : processedData.map(t => this.renderTableRow(t, categoryMap)).join('')}
+              ${paginatedData.length === 0 ? this.renderEmptyRow() : paginatedData.map(t => this.renderTableRow(t, categoryMap)).join('')}
             </tbody>
           </table>
+        </div>
+        
+        <!-- Paginación estilo MudBlazor -->
+        <div class="pagination-container">
+          <div class="pagination-left">
+            <span class="pagination-info">${totalItems > 0 ? `${startIndex + 1}-${endIndex} de ${totalItems}` : '0-0 de 0'}</span>
+          </div>
+          <div class="pagination-right">
+            <button class="pagination-btn btn-first" ${this.currentPage === 1 ? 'disabled' : ''} title="Primera página">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="11 17 6 12 11 7"></polyline><polyline points="18 17 13 12 18 7"></polyline></svg>
+            </button>
+            <button class="pagination-btn btn-prev" ${this.currentPage === 1 ? 'disabled' : ''} title="Página anterior">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            </button>
+            <span class="pagination-page-indicator">Pág. ${this.currentPage} de ${totalPages}</span>
+            <button class="pagination-btn btn-next" ${this.currentPage === totalPages ? 'disabled' : ''} title="Página siguiente">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </button>
+            <button class="pagination-btn btn-last" ${this.currentPage === totalPages ? 'disabled' : ''} title="Última página">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="13 17 18 12 13 7"></polyline><polyline points="6 17 11 12 6 7"></polyline></svg>
+            </button>
+          </div>
         </div>
       </div>
     `;
@@ -104,9 +139,45 @@ export class TransactionsTable {
     filterButtons.forEach(btn => {
       btn.addEventListener('click', (e) => {
         this.currentFilter = e.target.getAttribute('data-filter');
+        this.currentPage = 1;
         this.render(transactions, categoryMap);
       });
     });
+
+    // Listeners de paginación
+    const btnFirst = this.container.querySelector('.btn-first');
+    const btnPrev = this.container.querySelector('.btn-prev');
+    const btnNext = this.container.querySelector('.btn-next');
+    const btnLast = this.container.querySelector('.btn-last');
+
+    if (btnFirst) {
+      btnFirst.addEventListener('click', () => {
+        this.currentPage = 1;
+        this.render(transactions, categoryMap);
+      });
+    }
+    if (btnPrev) {
+      btnPrev.addEventListener('click', () => {
+        if (this.currentPage > 1) {
+          this.currentPage--;
+          this.render(transactions, categoryMap);
+        }
+      });
+    }
+    if (btnNext) {
+      btnNext.addEventListener('click', () => {
+        if (this.currentPage < totalPages) {
+          this.currentPage++;
+          this.render(transactions, categoryMap);
+        }
+      });
+    }
+    if (btnLast) {
+      btnLast.addEventListener('click', () => {
+        this.currentPage = totalPages;
+        this.render(transactions, categoryMap);
+      });
+    }
 
     // Botón Agregar
     document.getElementById('transactions-add-btn').addEventListener('click', () => {

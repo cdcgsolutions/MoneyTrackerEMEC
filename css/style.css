@@ -853,3 +853,105 @@ body {
   cursor: not-allowed;
   pointer-events: none;
 }
+
+/* --- PAGINACION DE ESTILO PREMIUM (MUDBLAZOR INSPIRADO) --- */
+.pagination-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.85rem 1.5rem;
+  background-color: var(--bg-card);
+  border-top: 1px solid var(--border-color);
+  font-family: 'Outfit', sans-serif;
+  user-select: none;
+}
+
+.pagination-info {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.pagination-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.pagination-page-indicator {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-main);
+  min-width: 80px;
+  text-align: center;
+}
+
+.pagination-btn {
+  background: none;
+  border: 1px solid var(--border-color);
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.pagination-btn:hover:not(:disabled) {
+  background-color: var(--bg-main);
+  color: var(--primary-red);
+  border-color: var(--primary-red-light);
+}
+
+.pagination-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  background-color: var(--bg-main);
+}
+
+.pagination-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Ajustes especiales para dashboard list */
+.dashboard-pagination {
+  margin-top: 0.5rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+}
+
+@media (max-width: 600px) {
+  .pagination-container {
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 1rem;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .pagination-left {
+    text-align: center;
+    width: 100%;
+  }
+  
+  .pagination-right {
+    width: 100%;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+  
+  .pagination-page-indicator {
+    min-width: 65px;
+    font-size: 0.8rem;
+  }
+
+  .pagination-btn {
+    width: 36px;
+    height: 36px;
+  }
+}

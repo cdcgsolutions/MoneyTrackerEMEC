@@ -45,17 +45,26 @@
 
 .kpi-card.kpi-balance {
   padding: 2.1rem 2.25rem;
+  border-color: rgba(220, 53, 69, 0.15);
+  box-shadow: 0 10px 25px -5px rgba(220, 53, 69, 0.05), var(--shadow-sm);
+}
+
+.kpi-card.kpi-balance:hover {
+  transform: translateY(-4px);
+  border-color: var(--primary-red);
+  box-shadow: 0 12px 30px -5px rgba(220, 53, 69, 0.12), var(--shadow-lg);
 }
 
 .kpi-card.kpi-income,
 .kpi-card.kpi-expense {
-  padding: 1.45rem 1.6rem;
+  padding: 1.25rem 1.5rem;
 }
 
-.kpi-card:hover {
+.kpi-card.kpi-income:hover,
+.kpi-card.kpi-expense:hover {
   transform: translateY(-4px);
-  border-color: var(--primary-red);
-  box-shadow: var(--shadow-lg);
+  border-color: var(--text-muted);
+  box-shadow: var(--shadow-md);
 }
 
 /* Fondo decorativo sutil en las tarjetas */
@@ -142,7 +151,9 @@
 
 .kpi-income .kpi-value,
 .kpi-expense .kpi-value {
-  font-size: 1.85rem;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--text-secondary);
 }
 
 .kpi-balance .kpi-value.positive {
@@ -150,14 +161,6 @@
 }
 
 .kpi-balance .kpi-value.negative {
-  color: var(--color-expense);
-}
-
-.kpi-income .kpi-value {
-  color: var(--color-income);
-}
-
-.kpi-expense .kpi-value {
   color: var(--color-expense);
 }
 
