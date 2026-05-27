@@ -325,8 +325,17 @@
 
 @media (max-width: 900px) {
   .kpi-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr;
     gap: 1rem;
+  }
+
+  .kpi-card.kpi-balance {
+    grid-column: span 2;
+  }
+
+  .kpi-card.kpi-income,
+  .kpi-card.kpi-expense {
+    grid-column: span 1;
   }
 
   .kpi-card {
@@ -359,6 +368,34 @@
     margin: 0 !important;
     padding: 0.35rem 0.4rem !important;
     font-size: 0.8rem !important;
+  }
+
+  /* Optimizar las tarjetas KPI en móvil para evitar desbordes */
+  .kpi-card {
+    padding: 1.15rem 0.85rem !important;
+  }
+
+  .kpi-title {
+    font-size: 0.75rem !important;
+  }
+
+  .kpi-icon-container {
+    width: 2rem !important;
+    height: 2rem !important;
+  }
+
+  .kpi-icon-container svg {
+    width: 1rem !important;
+    height: 1rem !important;
+  }
+
+  .kpi-balance .kpi-value {
+    font-size: 1.85rem !important;
+  }
+
+  .kpi-income .kpi-value,
+  .kpi-expense .kpi-value {
+    font-size: 1.35rem !important;
   }
 
   .recent-section {
