@@ -442,6 +442,8 @@ body.dark-theme .form-control option {
   .navbar-container {
     height: 4rem;
     padding: 0 0.75rem;
+    justify-content: flex-start !important;
+    gap: 1rem !important;
   }
 
   .navbar-brand {
@@ -462,12 +464,20 @@ body.dark-theme .form-control option {
     font-size: 0.95rem;
   }
 
-  .nav-btn {
+  .navbar-nav, .navbar-actions {
+    display: none !important;
+  }
+
+  .navbar-menu-btn {
+    display: flex !important;
+  }
+
+  .navbar-nav .nav-btn {
     padding: 0.5rem 0.75rem;
     font-size: 0.85rem;
   }
 
-  .nav-btn span {
+  .navbar-nav .nav-btn span {
     display: none;
   }
 
@@ -1102,4 +1112,216 @@ body {
 
 .navbar, .kpi-card, .recent-section, .table-container, .modal-card, .form-control, .type-btn {
   transition: background-color var(--transition-normal), border-color var(--transition-normal), color var(--transition-normal), box-shadow var(--transition-normal);
+}
+
+/* --- SIDEBAR RESPONSIVO (DRAWER) --- */
+.sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(8px);
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition-normal);
+}
+
+.sidebar-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.sidebar-menu {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 280px;
+  max-width: 85vw;
+  background-color: var(--bg-card);
+  border-right: 1px solid var(--border-color);
+  box-shadow: var(--shadow-modal);
+  z-index: 1001;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(-100%);
+  transition: transform var(--transition-normal) cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sidebar-menu.active {
+  transform: translateX(0);
+}
+
+.sidebar-header {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sidebar-close-btn {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition-fast);
+}
+
+.sidebar-close-btn:hover {
+  background-color: var(--bg-main);
+  color: var(--primary-red);
+}
+
+.sidebar-close-btn svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.sidebar-content {
+  flex-grow: 1;
+  padding: 1.5rem;
+  overflow-y: auto;
+}
+
+.sidebar-nav-links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  height: 100%;
+}
+
+/* Unificar estilos de todos los botones en el sidebar */
+.sidebar-nav-links .nav-btn,
+.sidebar-nav-links .btn-outline,
+.sidebar-nav-links .btn-logout {
+  width: 100%;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  padding: 0.85rem 1.25rem !important;
+  font-size: 0.95rem !important;
+  font-weight: 600 !important;
+  border-radius: var(--radius-md) !important;
+  gap: 0.75rem !important;
+  height: auto !important;
+  border: 1px solid var(--border-color) !important;
+  background-color: transparent !important;
+  color: var(--text-secondary) !important;
+  transition: all var(--transition-fast) !important;
+  line-height: 1 !important;
+}
+
+/* Sincronizar el tamaño y la alineación de todos los iconos del sidebar */
+.sidebar-nav-links .nav-btn svg,
+.sidebar-nav-links .btn-outline svg,
+.sidebar-nav-links .btn-logout svg {
+  width: 1.2rem !important;
+  height: 1.2rem !important;
+  stroke-width: 2.2 !important;
+  display: inline-block !important;
+  vertical-align: middle !important;
+  flex-shrink: 0 !important;
+  margin: 0 !important;
+}
+
+/* Estilos específicos para estados activos y hovers del sidebar */
+.sidebar-nav-links .nav-btn.active {
+  background-color: var(--primary-red) !important;
+  color: #ffffff !important;
+  border-color: var(--primary-red) !important;
+}
+
+.sidebar-nav-links .nav-btn:hover:not(.active),
+.sidebar-nav-links .btn-outline:hover {
+  background-color: var(--bg-main) !important;
+  color: var(--text-main) !important;
+  border-color: var(--text-muted) !important;
+}
+
+.sidebar-nav-links .btn-logout:hover {
+  background-color: var(--color-expense-light) !important;
+  border-color: var(--primary-red) !important;
+  color: var(--primary-red) !important;
+}
+
+/* Alinear verticalmente las etiquetas del menú */
+.sidebar-nav-links span {
+  display: inline-block !important;
+  vertical-align: middle !important;
+  font-size: 0.95rem !important;
+  font-weight: 600 !important;
+  line-height: 1 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.sidebar-divider {
+  border: 0;
+  height: 1px;
+  background-color: var(--border-color);
+  margin: 0.5rem 0;
+}
+
+/* --- ESTILOS DEL PIE DEL SIDEBAR (SIDEBAR FOOTER) --- */
+.sidebar-footer {
+  margin-top: auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0.6rem !important;
+  width: 100% !important;
+  padding-top: 1rem !important;
+  border-top: 1px solid var(--border-color) !important;
+}
+
+.sidebar-footer-row {
+  display: flex !important;
+  gap: 0.5rem !important;
+  width: 100% !important;
+}
+
+.sidebar-footer .sidebar-footer-row .btn-outline {
+  flex: 1 !important;
+  width: auto !important;
+  justify-content: center !important;
+  padding: 0.85rem 0.5rem !important;
+  font-size: 0.85rem !important;
+  font-weight: 600 !important;
+  gap: 0.35rem !important;
+}
+
+.sidebar-footer .btn-logout {
+  width: 100% !important;
+  justify-content: center !important;
+  padding: 0.85rem 1.25rem !important;
+  font-size: 0.95rem !important;
+  font-weight: 600 !important;
+  gap: 0.5rem !important;
+}
+
+/* Sincronizar tamaño y alineación de iconos en el pie */
+.sidebar-footer button svg {
+  width: 1.1rem !important;
+  height: 1.1rem !important;
+  stroke-width: 2.2 !important;
+  margin: 0 !important;
+  display: inline-block !important;
+  vertical-align: middle !important;
+}
+
+.sidebar-footer button span {
+  font-size: 0.85rem !important;
+  font-weight: 600 !important;
+}
+
+.sidebar-theme-btn-light.active,
+.sidebar-theme-btn-dark.active {
+  background-color: var(--primary-red) !important;
+  color: #ffffff !important;
+  border-color: var(--primary-red) !important;
 }

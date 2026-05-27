@@ -28,7 +28,12 @@ class App {
     this.loginScreen = document.getElementById('login-screen');
     this.loginForm = document.getElementById('login-form');
     this.loginErrorBanner = document.getElementById('login-error-banner');
-    this.logoutBtn = document.getElementById('nav-logout-btn');
+    
+    // Sidebar elements
+    this.sidebarMenu = document.getElementById('sidebar-menu');
+    this.sidebarOverlay = document.getElementById('sidebar-overlay');
+    this.sidebarOpenBtn = document.getElementById('navbar-menu-btn');
+    this.sidebarCloseBtn = document.getElementById('sidebar-close-btn');
 
     this.loginTogglePasswordBtn = document.getElementById('login-toggle-password');
     this.loginPasswordInput = document.getElementById('login-password');
@@ -45,7 +50,8 @@ class App {
     this.auditTableBody = document.getElementById('audit-table-body');
 
     this.qrModalOverlay = document.getElementById('qr-modal');
-    this.qrBtn = document.getElementById('nav-qr-btn');
+    this.qrButtons = document.querySelectorAll('.qr-toggle-btn');
+    this.logoutButtons = document.querySelectorAll('.logout-btn');
 
     this.initTheme();
     this.init();
@@ -58,6 +64,7 @@ class App {
       btn.addEventListener('click', (e) => {
         const tab = e.currentTarget.getAttribute('data-tab');
         this.switchTab(tab);
+        this.closeSidebar();
       });
     });
 
@@ -104,8 +111,19 @@ class App {
 
     const closeQrModalBtn = document.getElementById('qr-modal-close');
 
-    if (this.qrBtn) {
-      this.qrBtn.addEventListener('click', () => {
+    // Sidebar open/close handlers
+    if (this.sidebarOpenBtn) {
+      this.sidebarOpenBtn.addEventListener('click', () => this.openSidebar());
+    }
+    if (this.sidebarCloseBtn) {
+      this.sidebarCloseBtn.addEventListener('click', () => this.closeSidebar());
+    }
+    if (this.sidebarOverlay) {
+      this.sidebarOverlay.addEventListener('click', () => this.closeSidebar());
+    }
+
+    this.qrButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
         if (this.qrModalOverlay) {
           this.qrModalOverlay.style.display = 'flex';
           setTimeout(() => {
@@ -113,8 +131,9 @@ class App {
           }, 10);
           document.body.style.overflow = 'hidden';
         }
+        this.closeSidebar();
       });
-    }
+    });
 
     if (closeQrModalBtn) {
       closeQrModalBtn.addEventListener('click', () => this.closeQrModal());
@@ -134,9 +153,12 @@ class App {
     }
 
     this.loginForm.addEventListener('submit', (e) => this.handleLogin(e));
-    if (this.logoutBtn) {
-      this.logoutBtn.addEventListener('click', () => this.handleLogout());
-    }
+    this.logoutButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        this.closeSidebar();
+        this.handleLogout();
+      });
+    });
     if (this.loginTogglePasswordBtn) {
       this.loginTogglePasswordBtn.addEventListener('click', () => this.toggleLoginPasswordVisibility());
     }
@@ -580,6 +602,22 @@ class App {
     }
   }
 
+  openSidebar() {
+    if (this.sidebarMenu && this.sidebarOverlay) {
+      this.sidebarMenu.classList.add('active');
+      this.sidebarOverlay.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+  }
+
+  closeSidebar() {
+    if (this.sidebarMenu && this.sidebarOverlay) {
+      this.sidebarMenu.classList.remove('active');
+      this.sidebarOverlay.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+  }
+
   downloadQrTicket() {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
@@ -684,7 +722,8 @@ class App {
 
   initTheme() {
     const themeButtons = document.querySelectorAll('.theme-toggle-btn');
-    if (themeButtons.length === 0) return;
+    const sidebarThemeBtnLight = document.querySelector('.sidebar-theme-btn-light');
+    const sidebarThemeBtnDark = document.querySelector('.sidebar-theme-btn-dark');
 
     const savedTheme = localStorage.getItem('theme');
     const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -710,6 +749,17 @@ class App {
           if (moonIcon) moonIcon.style.display = 'block';
         }
       });
+
+      // Actualizar el estado activo de los botones divididos en el sidebar móvil
+      if (sidebarThemeBtnLight && sidebarThemeBtnDark) {
+        if (isDark) {
+          sidebarThemeBtnLight.classList.remove('active');
+          sidebarThemeBtnDark.classList.add('active');
+        } else {
+          sidebarThemeBtnLight.classList.add('active');
+          sidebarThemeBtnDark.classList.remove('active');
+        }
+      }
     };
 
     // Cargar tema inicial (priorizando localStorage y luego preferencia del sistema operativo)
@@ -726,6 +776,20 @@ class App {
         applyTheme(!isCurrentlyDark);
       });
     });
+
+    // Escuchador para el botón Claro individual en el sidebar móvil
+    if (sidebarThemeBtnLight) {
+      sidebarThemeBtnLight.addEventListener('click', () => {
+        applyTheme(false);
+      });
+    }
+
+    // Escuchador para el botón Oscuro individual en el sidebar móvil
+    if (sidebarThemeBtnDark) {
+      sidebarThemeBtnDark.addEventListener('click', () => {
+        applyTheme(true);
+      });
+    }
   }
 }
 
