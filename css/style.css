@@ -16,6 +16,7 @@
   --bg-card: #ffffff;
   --border-color: hsl(214, 15%, 91%);
   --border-focus: var(--primary-red);
+  --bg-input-focus: #ffffff;
 
   --text-main: hsl(222, 47%, 12%);
   --text-secondary: hsl(215, 16%, 45%);
@@ -122,7 +123,7 @@ body {
 
 .nav-btn {
   background: none;
-  border: none;
+  border: 1px solid var(--border-color);
   font-family: inherit;
   font-size: 0.95rem;
   font-weight: 500;
@@ -139,11 +140,13 @@ body {
 .nav-btn:hover {
   background-color: var(--primary-red-light);
   color: var(--primary-red);
+  border-color: var(--primary-red-light);
 }
 
 .nav-btn.active {
   background-color: var(--primary-red);
   color: #ffffff;
+  border-color: var(--primary-red);
 }
 
 .nav-btn svg {
@@ -311,10 +314,19 @@ body {
   transition: var(--transition-fast);
 }
 
+.form-control:hover {
+  border-color: var(--text-muted);
+}
+
 .form-control:focus {
   border-color: var(--border-focus);
-  background-color: #ffffff;
+  background-color: var(--bg-input-focus);
   box-shadow: 0 0 0 3px var(--primary-red-focus);
+}
+
+body.dark-theme .form-control option {
+  background-color: var(--bg-card);
+  color: var(--text-main);
 }
 
 .input-icon-group {
@@ -463,12 +475,6 @@ body {
     padding: 1.25rem 1rem;
   }
 
-  #dash-month, #dash-year, #tx-month, #tx-year {
-    flex: 1 1 100%;
-    width: 100% !important;
-    margin-bottom: 0.25rem;
-  }
-  
   .hide-mobile {
     display: none;
   }
@@ -1016,6 +1022,7 @@ body.dark-theme {
   --text-main: hsl(210, 40%, 98%);
   --text-secondary: hsl(215, 20%, 75%);
   --text-muted: hsl(215, 14%, 55%);
+  --bg-input-focus: var(--bg-card);
 
   --primary-red: hsl(353, 85%, 55%);
   --primary-red-hover: hsl(353, 90%, 62%);
@@ -1033,10 +1040,32 @@ body.dark-theme {
   --shadow-modal: 0 20px 25px -5px rgba(0, 0, 0, 0.6), 0 10px 10px -5px rgba(0, 0, 0, 0.4);
 }
 
-/* Botón flotante para cambio de tema */
-.theme-toggle-btn {
-  position: fixed;
-  top: 5.5rem; /* Colocado justo debajo del navbar sticky */
+/* Botones para cambio de tema */
+.navbar-theme-btn {
+  padding: 0.4rem;
+  width: 2.1rem;
+  height: 2.1rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
+  background: var(--bg-card);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--text-main);
+  transition: all var(--transition-fast);
+}
+
+.navbar-theme-btn:hover {
+  background-color: var(--primary-red-light);
+  border-color: var(--primary-red-light);
+  color: var(--primary-red);
+  transform: scale(1.05) rotate(15deg);
+}
+
+.login-theme-btn {
+  position: absolute;
+  top: 1.5rem;
   right: 1.5rem;
   width: 2.75rem;
   height: 2.75rem;
@@ -1049,11 +1078,11 @@ body.dark-theme {
   justify-content: center;
   cursor: pointer;
   box-shadow: var(--shadow-md);
-  z-index: 999;
+  z-index: 1000;
   transition: all var(--transition-normal);
 }
 
-.theme-toggle-btn:hover {
+.login-theme-btn:hover {
   transform: scale(1.08) rotate(15deg);
   border-color: var(--primary-red);
   color: var(--primary-red);
@@ -1073,14 +1102,4 @@ body {
 
 .navbar, .kpi-card, .recent-section, .table-container, .modal-card, .form-control, .type-btn {
   transition: background-color var(--transition-normal), border-color var(--transition-normal), color var(--transition-normal), box-shadow var(--transition-normal);
-}
-
-@media (max-width: 1024px) {
-  /* En móviles, lo flotamos abajo a la derecha para mejor ergonomía con una sola mano */
-  .theme-toggle-btn {
-    top: auto;
-    bottom: 1.5rem;
-    right: 1.5rem;
-    box-shadow: var(--shadow-lg);
-  }
 }

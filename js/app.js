@@ -683,11 +683,8 @@ class App {
   }
 
   initTheme() {
-    this.themeToggleBtn = document.getElementById('theme-toggle-btn');
-    if (!this.themeToggleBtn) return;
-
-    const sunIcon = this.themeToggleBtn.querySelector('.theme-icon-sun');
-    const moonIcon = this.themeToggleBtn.querySelector('.theme-icon-moon');
+    const themeButtons = document.querySelectorAll('.theme-toggle-btn');
+    if (themeButtons.length === 0) return;
 
     const savedTheme = localStorage.getItem('theme');
     const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -695,15 +692,24 @@ class App {
     const applyTheme = (isDark) => {
       if (isDark) {
         document.body.classList.add('dark-theme');
-        if (sunIcon) sunIcon.style.display = 'block';
-        if (moonIcon) moonIcon.style.display = 'none';
         localStorage.setItem('theme', 'dark');
       } else {
         document.body.classList.remove('dark-theme');
-        if (sunIcon) sunIcon.style.display = 'none';
-        if (moonIcon) moonIcon.style.display = 'block';
         localStorage.setItem('theme', 'light');
       }
+
+      // Actualizar los iconos de todos los botones de tema en la página
+      themeButtons.forEach(btn => {
+        const sunIcon = btn.querySelector('.theme-icon-sun');
+        const moonIcon = btn.querySelector('.theme-icon-moon');
+        if (isDark) {
+          if (sunIcon) sunIcon.style.display = 'block';
+          if (moonIcon) moonIcon.style.display = 'none';
+        } else {
+          if (sunIcon) sunIcon.style.display = 'none';
+          if (moonIcon) moonIcon.style.display = 'block';
+        }
+      });
     };
 
     // Cargar tema inicial (priorizando localStorage y luego preferencia del sistema operativo)
@@ -713,10 +719,12 @@ class App {
       applyTheme(false);
     }
 
-    // Escuchador del click para alternar tema
-    this.themeToggleBtn.addEventListener('click', () => {
-      const isCurrentlyDark = document.body.classList.contains('dark-theme');
-      applyTheme(!isCurrentlyDark);
+    // Escuchador del click para alternar tema en todos los botones
+    themeButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const isCurrentlyDark = document.body.classList.contains('dark-theme');
+        applyTheme(!isCurrentlyDark);
+      });
     });
   }
 }
