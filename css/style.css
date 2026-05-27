@@ -1315,6 +1315,8 @@ body {
 }
 
 .sidebar-footer button span {
+  display: inline-block !important;
+  vertical-align: middle !important;
   font-size: 0.85rem !important;
   font-weight: 600 !important;
 }
