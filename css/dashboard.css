@@ -355,7 +355,10 @@
   #dash-month, #dash-year, .dashboard-header .btn {
     flex: 1 1 0% !important;
     width: auto !important;
+    min-width: 0 !important;
     margin: 0 !important;
+    padding: 0.35rem 0.4rem !important;
+    font-size: 0.8rem !important;
   }
 
   .recent-section {

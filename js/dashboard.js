@@ -91,23 +91,23 @@ export class Dashboard {
         
         <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; margin-left: auto;">
           <select id="dash-month" class="form-control" style="width: auto; padding: 0.35rem 0.75rem; font-size: 0.85rem; height: auto;">
-            <option value="all" ${this.selectedMonth === 'all' ? 'selected' : ''}>Todos los meses</option>
-            <option value="0" ${this.selectedMonth === '0' ? 'selected' : ''}>Enero</option>
-            <option value="1" ${this.selectedMonth === '1' ? 'selected' : ''}>Febrero</option>
-            <option value="2" ${this.selectedMonth === '2' ? 'selected' : ''}>Marzo</option>
-            <option value="3" ${this.selectedMonth === '3' ? 'selected' : ''}>Abril</option>
-            <option value="4" ${this.selectedMonth === '4' ? 'selected' : ''}>Mayo</option>
-            <option value="5" ${this.selectedMonth === '5' ? 'selected' : ''}>Junio</option>
-            <option value="6" ${this.selectedMonth === '6' ? 'selected' : ''}>Julio</option>
-            <option value="7" ${this.selectedMonth === '7' ? 'selected' : ''}>Agosto</option>
-            <option value="8" ${this.selectedMonth === '8' ? 'selected' : ''}>Septiembre</option>
-            <option value="9" ${this.selectedMonth === '9' ? 'selected' : ''}>Octubre</option>
-            <option value="10" ${this.selectedMonth === '10' ? 'selected' : ''}>Noviembre</option>
-            <option value="11" ${this.selectedMonth === '11' ? 'selected' : ''}>Diciembre</option>
+            <option value="all" ${this.selectedMonth === 'all' ? 'selected' : ''}>Todos</option>
+            <option value="0" ${this.selectedMonth === '0' ? 'selected' : ''}>Ene</option>
+            <option value="1" ${this.selectedMonth === '1' ? 'selected' : ''}>Feb</option>
+            <option value="2" ${this.selectedMonth === '2' ? 'selected' : ''}>Mar</option>
+            <option value="3" ${this.selectedMonth === '3' ? 'selected' : ''}>Abr</option>
+            <option value="4" ${this.selectedMonth === '4' ? 'selected' : ''}>May</option>
+            <option value="5" ${this.selectedMonth === '5' ? 'selected' : ''}>Jun</option>
+            <option value="6" ${this.selectedMonth === '6' ? 'selected' : ''}>Jul</option>
+            <option value="7" ${this.selectedMonth === '7' ? 'selected' : ''}>Ago</option>
+            <option value="8" ${this.selectedMonth === '8' ? 'selected' : ''}>Sep</option>
+            <option value="9" ${this.selectedMonth === '9' ? 'selected' : ''}>Oct</option>
+            <option value="10" ${this.selectedMonth === '10' ? 'selected' : ''}>Nov</option>
+            <option value="11" ${this.selectedMonth === '11' ? 'selected' : ''}>Dic</option>
           </select>
           
           <select id="dash-year" class="form-control" style="width: auto; padding: 0.35rem 0.75rem; font-size: 0.85rem; height: auto;">
-            <option value="all" ${this.selectedYear === 'all' ? 'selected' : ''}>Todos los años</option>
+            <option value="all" ${this.selectedYear === 'all' ? 'selected' : ''}>Todos</option>
             ${this.getYearOptions(transactions)}
           </select>
 
