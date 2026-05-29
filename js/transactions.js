@@ -280,7 +280,7 @@ export class TransactionsTable {
 
     return `
       <tr class="${t.tipo}-row ${isActive ? '' : 'tx-inactive'}" style="${isActive ? '' : 'background-color: #f8f9fa;'}">
-        <td class="tx-date cell-date">${t.fecha}</td>
+        <td class="tx-date cell-date">${t.fecha ? t.fecha.replace('T', ' ') : ''}</td>
         <td class="tx-desc cell-desc" title="ID: ${cleanTxId}" style="${isActive ? '' : 'text-decoration: line-through;'}">${this.escapeHtml(t.descripcion)}</td>
         <td class="cell-category" style="color: var(--text-secondary); font-weight: 500;">
           ${categoryName}

@@ -408,7 +408,13 @@ class App {
         inputMonto.value = tx.monto;
         inputDescripcion.value = tx.descripcion;
         selectCategoria.value = tx.categoriaId;
-        inputFecha.value = tx.fecha;
+        
+        let dateVal = tx.fecha;
+        if (dateVal && !dateVal.includes('T')) {
+          dateVal = `${dateVal}T00:00`;
+        }
+        inputFecha.value = dateVal;
+        
         this.setModalType(tx.tipo);
 
         inputMonto.disabled = true;
@@ -425,7 +431,10 @@ class App {
       inputFecha.disabled = false;
       this.typeButtons.forEach(btn => btn.classList.remove('disabled-type-btn'));
 
-      inputFecha.value = new Date().toISOString().split('T')[0];
+      const now = new Date();
+      const tzoffset = now.getTimezoneOffset() * 60000;
+      const localISOTime = (new Date(now - tzoffset)).toISOString().slice(0, 16);
+      inputFecha.value = localISOTime;
 
       if (this.categories.length > 0) {
         selectCategoria.value = this.categories[0].id;

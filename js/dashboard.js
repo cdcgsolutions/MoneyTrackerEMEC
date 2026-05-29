@@ -56,7 +56,11 @@ export class Dashboard {
 
     const sortedTransactions = [...filteredTransactions]
       .sort((a, b) => {
-        const dateDiff = new Date(b.fecha) - new Date(a.fecha);
+        const parseDate = (dStr) => {
+          if (!dStr) return new Date(0);
+          return new Date(dStr.includes('T') ? dStr : `${dStr}T00:00`);
+        };
+        const dateDiff = parseDate(b.fecha) - parseDate(a.fecha);
         if (dateDiff !== 0) return dateDiff;
         return Number(b.id) - Number(a.id);
       });
@@ -309,7 +313,7 @@ export class Dashboard {
               </span>
             </div>
             <div class="recent-meta" style="margin-top: 0.15rem;">
-              <span>${t.fecha}</span>
+              <span>${t.fecha ? t.fecha.replace('T', ' ') : ''}</span>
               <span class="recent-meta-separator"></span>
               <span style="font-weight: 500;">${categoryName}</span>
               ${isActive ? '' : '<span style="color: var(--text-muted); font-size: 0.75rem; font-weight: 700; text-transform: uppercase; margin-left: 0.5rem;">[Anulado]</span>'}

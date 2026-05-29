@@ -155,7 +155,11 @@ export class StorageManager {
       });
 
       return transactions.sort((a, b) => {
-        const dateDiff = new Date(a.fecha) - new Date(b.fecha);
+        const parseDate = (dStr) => {
+          if (!dStr) return new Date(0);
+          return new Date(dStr.includes('T') ? dStr : `${dStr}T00:00`);
+        };
+        const dateDiff = parseDate(a.fecha) - parseDate(b.fecha);
         if (dateDiff !== 0) return dateDiff;
         return Number(a.id) - Number(b.id);
       });
