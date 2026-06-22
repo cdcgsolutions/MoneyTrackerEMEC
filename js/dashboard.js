@@ -54,6 +54,31 @@ export class Dashboard {
 
     const metrics = this.calculateMetrics(filteredTransactions);
 
+    // Calcular saldos acumulados locales para las transacciones filtradas de este periodo
+    const chronological = [...filteredTransactions].sort((a, b) => {
+      const parseDate = (dStr) => {
+        if (!dStr) return new Date(0);
+        return new Date(dStr.includes('T') ? dStr : `${dStr}T00:00`);
+      };
+      const dateDiff = parseDate(a.fecha) - parseDate(b.fecha);
+      if (dateDiff !== 0) return dateDiff;
+      return Number(a.id) - Number(b.id);
+    });
+
+    let runningBalance = 0;
+    const computedBalances = {};
+    chronological.forEach(tx => {
+      const amt = parseFloat(tx.monto) || 0;
+      if (tx.activo !== false) {
+        if (tx.tipo === 'ingreso') {
+          runningBalance += amt;
+        } else {
+          runningBalance -= amt;
+        }
+      }
+      computedBalances[tx.id] = runningBalance;
+    });
+
     const sortedTransactions = [...filteredTransactions]
       .sort((a, b) => {
         const parseDate = (dStr) => {
@@ -175,7 +200,7 @@ export class Dashboard {
         </div>
 
         <div class="recent-list" id="recent-transactions-list" style="display: flex; flex-direction: column; gap: 0.75rem;">
-          ${paginatedRecent.length === 0 ? this.renderEmptyState() : paginatedRecent.map(t => this.renderTransactionItem(t, categoryMap)).join('')}
+          ${paginatedRecent.length === 0 ? this.renderEmptyState() : paginatedRecent.map(t => this.renderTransactionItem(t, categoryMap, computedBalances[t.id] || 0)).join('')}
         </div>
 
         <!-- Paginación estilo MudBlazor para Movimientos -->
@@ -281,12 +306,12 @@ export class Dashboard {
     `;
   }
 
-  renderTransactionItem(t, categoryMap) {
+  renderTransactionItem(t, categoryMap, computedBalance) {
     const isIncome = t.tipo === 'ingreso';
     const isActive = t.activo !== false;
     const categoryName = categoryMap[t.categoriaId] || 'Otros';
     const amt = parseFloat(t.monto) || 0;
-    const saldoDespues = parseFloat(t.saldoDespues) || 0;
+    const saldoDespues = computedBalance;
 
     const amtApplied = isActive ? amt : 0;
     const saldoAntes = isIncome ? (saldoDespues - amtApplied) : (saldoDespues + amtApplied);

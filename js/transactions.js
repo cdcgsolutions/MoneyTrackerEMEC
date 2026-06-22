@@ -44,6 +44,41 @@ export class TransactionsTable {
   render(transactions, categoryMap = {}) {
     if (!this.container) return;
 
+    // 1. Filtrar primero únicamente por mes y año para calcular saldos acumulados locales correctos en el período
+    let periodTransactions = transactions;
+    if (this.selectedMonth !== 'all' && this.selectedYear !== 'all') {
+      periodTransactions = transactions.filter(t => {
+        if (!t.fecha) return false;
+        const [yyyy, mm] = t.fecha.split('-');
+        return (parseInt(mm, 10) - 1).toString() === this.selectedMonth && yyyy === this.selectedYear;
+      });
+    }
+
+    // Ordenar cronológicamente (más antiguo primero) para acumular
+    const chronological = [...periodTransactions].sort((a, b) => {
+      const parseDate = (dStr) => {
+        if (!dStr) return new Date(0);
+        return new Date(dStr.includes('T') ? dStr : `${dStr}T00:00`);
+      };
+      const dateDiff = parseDate(a.fecha) - parseDate(b.fecha);
+      if (dateDiff !== 0) return dateDiff;
+      return Number(a.id) - Number(b.id);
+    });
+
+    let runningBalance = 0;
+    const computedBalances = {};
+    chronological.forEach(tx => {
+      const amt = parseFloat(tx.monto) || 0;
+      if (tx.activo !== false) {
+        if (tx.tipo === 'ingreso') {
+          runningBalance += amt;
+        } else {
+          runningBalance -= amt;
+        }
+      }
+      computedBalances[tx.id] = runningBalance;
+    });
+
     const processedData = this.processTransactions(transactions);
 
     const totalItems = processedData.length;
@@ -128,7 +163,7 @@ export class TransactionsTable {
               </tr>
             </thead>
             <tbody id="tx-table-body">
-              ${paginatedData.length === 0 ? this.renderEmptyRow() : paginatedData.map(t => this.renderTableRow(t, categoryMap)).join('')}
+              ${paginatedData.length === 0 ? this.renderEmptyRow() : paginatedData.map(t => this.renderTableRow(t, categoryMap, computedBalances[t.id] || 0)).join('')}
             </tbody>
           </table>
         </div>
@@ -262,14 +297,14 @@ export class TransactionsTable {
     `;
   }
 
-  renderTableRow(t, categoryMap) {
+  renderTableRow(t, categoryMap, computedBalance) {
     const isIncome = t.tipo === 'ingreso';
     const categoryName = categoryMap[t.categoriaId] || 'Otros';
     const cleanCategorySlug = categoryName.toLowerCase();
     const cleanTxId = t.id;
     const isActive = t.activo !== false;
     const amt = parseFloat(t.monto) || 0;
-    const saldoDespues = parseFloat(t.saldoDespues) || 0;
+    const saldoDespues = computedBalance;
 
     const amtApplied = isActive ? amt : 0;
     const saldoAntes = isIncome ? (saldoDespues - amtApplied) : (saldoDespues + amtApplied);
@@ -297,8 +332,8 @@ export class TransactionsTable {
         <td class="tx-amount expense cell-amount-out" style="text-align: right; ${isActive ? '' : 'text-decoration: line-through;'}">
           ${!isIncome ? this.formatMoney(t.monto) : '—'}
         </td>
-        <td class="tx-balance cell-balance ${t.saldoDespues >= 0 ? 'positive' : 'negative'}" style="text-align: right; font-weight: 600; ${isActive ? '' : 'text-decoration: line-through;'}">
-          ${isActive ? this.formatMoney(t.saldoDespues) : '—'}
+        <td class="tx-balance cell-balance ${saldoDespues >= 0 ? 'positive' : 'negative'}" style="text-align: right; font-weight: 600; ${isActive ? '' : 'text-decoration: line-through;'}">
+          ${isActive ? this.formatMoney(saldoDespues) : '—'}
         </td>
         <td class="cell-actions">
           <div class="actions-cell">
