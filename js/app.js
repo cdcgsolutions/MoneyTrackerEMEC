@@ -163,6 +163,19 @@ class App {
       this.loginTogglePasswordBtn.addEventListener('click', () => this.toggleLoginPasswordVisibility());
     }
 
+    // Efecto de corazones al hacer click
+    document.addEventListener('click', (e) => {
+      // Ignorar clics con coordenadas inválidas/vacías
+      if (e.clientX === 0 && e.clientY === 0) return;
+      
+      const target = e.target.closest('button, .btn, .kpi-card, .recent-item, .nav-btn, .action-btn');
+      if (target) {
+        this.createHeartBurst(e.clientX, e.clientY);
+      } else {
+        this.createSingleHeart(e.clientX, e.clientY);
+      }
+    });
+
     auth.onAuthStateChanged(async (user) => {
       if (user) {
         this.showGlobalLoading('Cargando tus datos contables...');
@@ -197,6 +210,54 @@ class App {
         this.dismissLoadingScreen();
       }
     });
+  }
+
+  createSingleHeart(x, y) {
+    const heart = document.createElement('div');
+    heart.className = 'click-heart';
+    heart.innerHTML = ['❤️', '💖', '💕', '🌹'][Math.floor(Math.random() * 4)];
+    heart.style.left = `${x}px`;
+    heart.style.top = `${y}px`;
+    
+    const angle = Math.random() * Math.PI * 2;
+    const distance = 15 + Math.random() * 20;
+    const tx = Math.cos(angle) * distance;
+    const ty = Math.sin(angle) * distance - 20;
+    
+    heart.style.setProperty('--tx', `${tx}px`);
+    heart.style.setProperty('--ty', `${ty}px`);
+    heart.style.setProperty('--rot', `${Math.random() * 60 - 30}deg`);
+    
+    document.body.appendChild(heart);
+    setTimeout(() => heart.remove(), 1000);
+  }
+
+  createHeartBurst(x, y) {
+    const numHearts = 6 + Math.floor(Math.random() * 4);
+    for (let i = 0; i < numHearts; i++) {
+      setTimeout(() => {
+        const heart = document.createElement('div');
+        heart.className = 'click-heart burst';
+        heart.innerHTML = ['❤️', '💖', '💕', '🌹'][Math.floor(Math.random() * 4)];
+        heart.style.left = `${x}px`;
+        heart.style.top = `${y}px`;
+        
+        const angle = (i / numHearts) * Math.PI * 2 + (Math.random() * 0.4 - 0.2);
+        const distance = 35 + Math.random() * 55;
+        const tx = Math.cos(angle) * distance;
+        const ty = Math.sin(angle) * distance - 10;
+        
+        heart.style.setProperty('--tx', `${tx}px`);
+        heart.style.setProperty('--ty', `${ty}px`);
+        heart.style.setProperty('--rot', `${Math.random() * 90 - 45}deg`);
+        
+        const scale = 0.6 + Math.random() * 0.6;
+        heart.style.transform = `translate(-50%, -50%) scale(${scale})`;
+        
+        document.body.appendChild(heart);
+        setTimeout(() => heart.remove(), 1200);
+      }, i * 25);
+    }
   }
 
   async handleLogin(e) {
@@ -297,6 +358,13 @@ class App {
   }
 
   showGlobalLoading(message = "Procesando...") {
+    const appLoading = document.getElementById('app-loading');
+    if (appLoading) {
+      const appLoadingMsg = appLoading.querySelector('p');
+      if (appLoadingMsg) appLoadingMsg.innerText = message;
+      return;
+    }
+
     const overlay = document.getElementById('loading-overlay');
     const msgEl = document.getElementById('loading-message');
     if (overlay) {

@@ -105,16 +105,14 @@ export class Dashboard {
     this.container.innerHTML = `
       <div class="dashboard-header animate-fade-in" style="align-items: center; flex-wrap: wrap; gap: 1rem;">
         <div class="dashboard-title-group" style="display: flex; align-items: center; gap: 0.75rem;">
-          <div style="background-color: var(--primary-red-light); color: var(--primary-red); width: 2.75rem; height: 2.75rem; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(217, 20, 41, 0.15); flex-shrink: 0;">
-            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="3" y="3" width="7" height="9" rx="1"></rect>
-              <rect x="14" y="3" width="7" height="5" rx="1"></rect>
-              <rect x="14" y="12" width="7" height="9" rx="1"></rect>
-              <rect x="3" y="16" width="7" height="5" rx="1"></rect>
+          <div style="background-color: var(--primary-red-light); color: var(--primary-red); width: 2.75rem; height: 2.75rem; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(217, 20, 41, 0.15); flex-shrink: 0; animation: heartbeat 1.5s infinite ease-in-out;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
             </svg>
           </div>
           <div>
-            <h1 style="margin: 0; line-height: 1.2;">Dashboard</h1>
+            <h1 style="margin: 0; line-height: 1.2; display: flex; align-items: center; gap: 0.5rem;">Dashboard <span style="font-size: 1.25rem; animation: heartbeat 1.5s infinite ease-in-out;">💖</span></h1>
+            <p style="margin: 0.25rem 0 0 0; font-size: 0.85rem; color: var(--text-secondary); font-weight: 500;">¡Hola mi amor, que tengas un lindo día! 🌹</p>
           </div>
         </div>
         
@@ -153,8 +151,10 @@ export class Dashboard {
         <div class="kpi-card kpi-balance">
           <div class="kpi-card-header">
             <span class="kpi-title">Balance Neto</span>
-            <div class="kpi-icon-container">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+            <div class="kpi-icon-container" style="color: var(--primary-red);">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" stroke="none" style="width: 1.35rem; height: 1.35rem;">
+                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+              </svg>
             </div>
           </div>
           <div class="kpi-value ${isBalancePositive ? 'positive' : 'negative'}">

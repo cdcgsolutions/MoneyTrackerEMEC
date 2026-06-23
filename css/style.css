@@ -239,8 +239,8 @@ body {
   box-shadow: var(--shadow-modal);
   border: 1px solid var(--border-color);
   overflow: hidden;
-  transform: scale(0.95) translateY(10px);
-  transition: transform var(--transition-normal);
+  transform: scale(0.85) translateY(20px);
+  transition: transform 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   margin: auto;
 }
 
@@ -528,13 +528,34 @@ body.dark-theme .form-control option {
 }
 
 .spinner {
-  width: 3.5rem;
-  height: 3.5rem;
-  border: 4px solid var(--border-color);
-  border-top-color: var(--primary-red);
-  border-radius: var(--radius-full);
-  animation: spin 1s linear infinite;
-  box-shadow: 0 4px 10px rgba(217, 20, 41, 0.1);
+  position: relative;
+  width: 5.5rem;
+  height: 5.5rem;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.spinner::before {
+  content: '❤️';
+  font-size: 3.2rem;
+  position: absolute;
+  animation: heartbeatPulse 1.2s infinite ease-in-out;
+  filter: drop-shadow(0 4px 10px rgba(217, 20, 41, 0.25));
+  display: block;
+}
+
+.spinner::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 3.5px dotted var(--primary-red);
+  border-radius: 50%;
+  animation: rotateRing 3s linear infinite;
+  opacity: 0.8;
 }
 
 @keyframes spin {
@@ -811,14 +832,19 @@ body.dark-theme .form-control option {
 
 .btn-spinner {
   display: inline-block;
-  width: 16px;
-  height: 16px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-radius: 50%;
-  border-top-color: #fff;
-  animation: spin 0.8s linear infinite;
+  width: auto;
+  height: auto;
+  border: none;
+  border-radius: 0;
+  animation: heartbeatPulse 1s infinite ease-in-out;
   margin-right: 0.6rem;
   flex-shrink: 0;
+}
+
+.btn-spinner::before {
+  content: '❤️';
+  font-size: 1rem;
+  display: block;
 }
 
 .tx-inactive {
@@ -1002,12 +1028,34 @@ body.dark-theme .form-control option {
 }
 
 .loading-overlay .loading-spinner {
-  width: 44px;
-  height: 44px;
-  border: 4px solid var(--border-color);
-  border-top: 4px solid var(--primary-red);
+  position: relative;
+  width: 5.5rem;
+  height: 5.5rem;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loading-overlay .loading-spinner::before {
+  content: '❤️';
+  font-size: 3.2rem;
+  position: absolute;
+  animation: heartbeatPulse 1.2s infinite ease-in-out;
+  filter: drop-shadow(0 4px 10px rgba(217, 20, 41, 0.25));
+  display: block;
+}
+
+.loading-overlay .loading-spinner::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 3.5px dotted var(--primary-red);
   border-radius: 50%;
-  animation: spinGlobalOverlay 0.8s linear infinite;
+  animation: rotateRing 3s linear infinite;
+  opacity: 0.8;
 }
 
 .loading-overlay .loading-message {
@@ -1019,7 +1067,15 @@ body.dark-theme .form-control option {
   letter-spacing: 0.1px;
 }
 
-@keyframes spinGlobalOverlay {
+@keyframes heartbeatPulse {
+  0% { transform: scale(0.9); }
+  15% { transform: scale(1.18); }
+  30% { transform: scale(0.9); }
+  45% { transform: scale(1.18); }
+  80% { transform: scale(0.9); }
+}
+
+@keyframes rotateRing {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
@@ -1326,4 +1382,157 @@ body {
   background-color: var(--primary-red) !important;
   color: #ffffff !important;
   border-color: var(--primary-red) !important;
+}
+
+/* Estilos Románticos */
+.romantic-sparkles {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.heart-sparkle {
+  position: absolute;
+  bottom: -50px;
+  font-size: 1.5rem;
+  opacity: 0;
+  animation: floatUp 10s infinite linear;
+  user-select: none;
+}
+
+.heart-sparkle.s1 { left: 5%; animation-delay: 0s; animation-duration: 9s; }
+.heart-sparkle.s2 { left: 20%; animation-delay: 3s; animation-duration: 12s; font-size: 1.8rem; }
+.heart-sparkle.s3 { left: 35%; animation-delay: 1.5s; animation-duration: 10s; }
+.heart-sparkle.s4 { left: 50%; animation-delay: 6s; animation-duration: 14s; font-size: 1.2rem; }
+.heart-sparkle.s5 { left: 65%; animation-delay: 4.5s; animation-duration: 11s; }
+.heart-sparkle.s6 { left: 80%; animation-delay: 2s; animation-duration: 8s; font-size: 1.7rem; }
+.heart-sparkle.s7 { left: 92%; animation-delay: 7s; animation-duration: 13s; }
+
+@keyframes floatUp {
+  0% {
+    transform: translateY(0) scale(0.5) rotate(0deg);
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.55;
+  }
+  85% {
+    opacity: 0.55;
+  }
+  100% {
+    transform: translateY(-110vh) scale(1.3) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+@keyframes heartbeat {
+  0% { transform: scale(1); }
+  14% { transform: scale(1.1); }
+  28% { transform: scale(1); }
+  42% { transform: scale(1.1); }
+  70% { transform: scale(1); }
+}
+
+/* Efecto latido en la marca y el botón principal */
+.brand-icon:hover, .kpi-card:hover .kpi-icon-container {
+  animation: heartbeat 1.2s infinite ease-in-out;
+}
+
+.kpi-card {
+  transition: transform var(--transition-normal), border-color var(--transition-normal), box-shadow var(--transition-normal), background-color var(--transition-normal);
+}
+
+/* Detalles de amor en los bordes y tarjetas del dashboard */
+.kpi-card.kpi-balance {
+  border-color: rgba(217, 20, 41, 0.25);
+  background-image: radial-gradient(circle at 100% 0%, rgba(217, 20, 41, 0.03) 0%, transparent 50%);
+}
+
+.kpi-card.kpi-balance:hover {
+  border-color: var(--primary-red) !important;
+  background-color: rgba(217, 20, 41, 0.01);
+}
+
+/* Corazones en las esquinas de las tarjetas */
+.kpi-card::after {
+  content: '💖';
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  font-size: 0.9rem;
+  opacity: 0.15;
+  transition: opacity var(--transition-normal), transform var(--transition-normal);
+  pointer-events: none;
+}
+
+.kpi-card:hover::after {
+  opacity: 0.65;
+  transform: scale(1.2);
+}
+
+.recent-section {
+  position: relative;
+  overflow: hidden;
+}
+
+.recent-section::after {
+  content: '🌹';
+  position: absolute;
+  right: 15px;
+  top: 15px;
+  font-size: 1.2rem;
+  opacity: 0.15;
+  pointer-events: none;
+  transition: opacity var(--transition-normal);
+}
+.recent-section:hover::after {
+  opacity: 0.45;
+}
+
+/* Partículas de corazones al hacer click */
+.click-heart {
+  position: fixed;
+  pointer-events: none;
+  z-index: 9999;
+  font-size: 1.25rem;
+  transform: translate(-50%, -50%) scale(0.6);
+  opacity: 1;
+  animation: heartPop 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  will-change: transform, opacity;
+  user-select: none;
+}
+
+.click-heart.burst {
+  animation: heartBurstAnim 1.0s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes heartPop {
+  0% {
+    transform: translate(-50%, -50%) scale(0.3);
+    opacity: 0;
+  }
+  15% {
+    transform: translate(-50%, -50%) scale(1.1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(0.6) rotate(var(--rot));
+    opacity: 0;
+  }
+}
+
+@keyframes heartBurstAnim {
+  0% {
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(0.8) rotate(var(--rot));
+    opacity: 0;
+  }
 }
