@@ -743,6 +743,18 @@ class App {
       ctx.font = '14px Outfit, Arial, sans-serif';
       ctx.fillText('Válido hasta: 25 de mayo del 2028', canvas.width / 2, footerY + 25);
       
+      const imgEspiar = document.getElementById('espiar-image-element');
+      if (imgEspiar && imgEspiar.complete) {
+        const espWidth = 75;
+        const aspectRatio = imgEspiar.naturalHeight / imgEspiar.naturalWidth;
+        const espHeight = espWidth * aspectRatio;
+        
+        // Dibujado en la esquina inferior izquierda, justo encima del borde interno
+        const espX = 15;
+        const espY = canvas.height - espHeight - 12;
+        ctx.drawImage(imgEspiar, espX, espY, espWidth, espHeight);
+      }
+      
       const link = document.createElement('a');
       link.download = 'QR_MiEsposito.jpeg';
       link.href = canvas.toDataURL('image/jpeg', 0.95);

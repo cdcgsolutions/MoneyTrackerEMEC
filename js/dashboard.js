@@ -150,7 +150,7 @@ export class Dashboard {
         <!-- Balance -->
         <div class="kpi-card kpi-balance">
           <div class="kpi-card-header">
-            <span class="kpi-title">Balance Neto</span>
+            <span class="kpi-title" style="font-weight: 700;">Balance (Disponible)</span>
             <div class="kpi-icon-container" style="color: var(--primary-red);">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" stroke="none" style="width: 1.35rem; height: 1.35rem;">
                 <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
@@ -160,32 +160,36 @@ export class Dashboard {
           <div class="kpi-value ${isBalancePositive ? 'positive' : 'negative'}">
             ${this.formatMoney(metrics.balance)}
           </div>
+          <div class="kpi-subtitle">Dinero que nos queda libre este mes</div>
+          <img src="Ednayyo.png" alt="Ednayyo" class="kpi-balance-img">
         </div>
 
         <!-- Ingresos -->
         <div class="kpi-card kpi-income">
           <div class="kpi-card-header">
-            <span class="kpi-title">Total Ingresos</span>
+            <span class="kpi-title" style="color: var(--color-income); font-weight: 700;">Ingresos (+)</span>
             <div class="kpi-icon-container">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
             </div>
           </div>
           <div class="kpi-value">
-            ${this.formatMoney(metrics.income)}
+            +${this.formatMoney(metrics.income)}
           </div>
+          <div class="kpi-subtitle">Dinero que ingresó este mes</div>
         </div>
 
         <!-- Egresos -->
         <div class="kpi-card kpi-expense">
           <div class="kpi-card-header">
-            <span class="kpi-title">Total Egresos</span>
+            <span class="kpi-title" style="color: var(--color-expense); font-weight: 700;">Egresos (-)</span>
             <div class="kpi-icon-container">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"></polyline><polyline points="17 18 23 18 23 12"></polyline></svg>
             </div>
           </div>
           <div class="kpi-value">
-            ${this.formatMoney(metrics.expense)}
+            -${this.formatMoney(metrics.expense)}
           </div>
+          <div class="kpi-subtitle">Dinero que gastamos este mes</div>
         </div>
       </div>
 
@@ -368,7 +372,7 @@ export class Dashboard {
     const years = new Set();
     const currentYear = new Date().getFullYear().toString();
     years.add(currentYear);
-    
+
     transactions.forEach(t => {
       if (t.fecha) {
         const [yyyy] = t.fecha.split('-');

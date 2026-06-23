@@ -140,11 +140,24 @@
   font-size: 2.75rem;
 }
 
-.kpi-income .kpi-value,
-.kpi-expense .kpi-value {
-  font-size: 1.6rem;
+.kpi-income .kpi-value {
+  font-size: 1.65rem;
   font-weight: 700;
-  color: var(--text-secondary);
+  color: var(--color-income);
+}
+
+.kpi-expense .kpi-value {
+  font-size: 1.65rem;
+  font-weight: 700;
+  color: var(--color-expense);
+}
+
+.kpi-subtitle {
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  margin-top: 0.35rem;
+  line-height: 1.3;
 }
 
 .kpi-balance .kpi-value.positive {
@@ -439,5 +452,33 @@
     white-space: nowrap;
     align-self: flex-start;
     margin-top: 0.15rem;
+  }
+}
+
+.kpi-balance-img {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  max-height: 85px;
+  width: auto;
+  object-fit: contain;
+  pointer-events: none;
+  z-index: 5;
+  transition: transform var(--transition-normal);
+}
+
+.kpi-card.kpi-balance:hover .kpi-balance-img {
+  transform: scale(1.05);
+}
+
+@media (max-width: 900px) {
+  .kpi-balance-img {
+    max-height: 70px;
+  }
+}
+
+@media (max-width: 768px) {
+  .kpi-balance-img {
+    max-height: 55px;
   }
 }
